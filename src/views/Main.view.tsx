@@ -37,6 +37,14 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
                 contentContainerStyle={styles.drawerContent}
             >
                 <Pressable onPress={() => {
+                    props.navigation.navigate('Habits');
+                }}
+                    style={styles.item}
+                >
+                    <Text style={styles.itemText}>Your Habits</Text>
+                </Pressable>
+
+                <Pressable onPress={() => {
                     props.navigation.navigate('Calendar');
                 }}
                     style={styles.item}

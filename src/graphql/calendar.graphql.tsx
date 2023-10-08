@@ -20,4 +20,20 @@ const CALENDAR_HABITSDATA = gql`
     }
 `;
 
-export default { CALENDAR_HABITSDATA };
+const CALENDAR_RESUMED_DATA = gql`
+    query HabitsDataCalendar (
+        $start_date: String!
+        $end_date: String!
+    ) {
+        calendarEventsByUser(
+            start_date: $start_date
+            end_date: $end_date
+        ) {
+            date
+            data
+            relative_frequency
+        }
+    }
+`;
+
+export default { CALENDAR_HABITSDATA, CALENDAR_RESUMED_DATA };
