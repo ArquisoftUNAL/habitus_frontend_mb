@@ -7,6 +7,8 @@ import { useLazyQuery } from '@apollo/client';
 
 import graphql from '../graphql';
 import { CalendarView } from './Calendar.view';
+import { AchievementsView } from './Achievements.view';
+import { NotificationsView } from './Notifications.view';
 import { IconComponentAsFunction } from '../components/Icon';
 import { createStyles } from './../styles/main.view.styles';
 import { UserInfoHeader } from '../components/UserInfoHeader';
@@ -146,6 +148,8 @@ export const MainView = (): JSX.Element => {
                 drawerStyle: styles.drawer,
                 headerTitle: 'This is Habitus!',
                 headerTintColor: theme.colors.primary,
+                drawerPosition: 'left',
+                headerShown: true,
             }}
             initialRouteName='Calendar'
             backBehavior='history'
@@ -175,7 +179,7 @@ export const MainView = (): JSX.Element => {
             />
             <Drawer.Screen
                 name="Achievements"
-                component={CalendarView}
+                component={AchievementsView}
                 options={{
                     drawerLabel: 'Achievements',
                     title: "Achievements"
@@ -191,7 +195,7 @@ export const MainView = (): JSX.Element => {
             />
             <Drawer.Screen
                 name="Notifications"
-                component={CalendarView}
+                component={NotificationsView}
                 options={{
                     drawerLabel: 'Notifications',
                     title: "Notifications"

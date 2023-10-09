@@ -3,8 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useQuery } from '@apollo/client';
 import PieChart from 'react-native-pie-chart';
 
-import { createStyles as calendarStylesBuilder } from '../styles/calendar.view.styles';
-import { createStyles as textStylesBuilder } from '../styles/texts.styles';
+import { createStyles } from '../styles/calendar.view.styles';
 import { LoadingView } from './LoadingView';
 import graphql from './../graphql';
 import { useTheme } from '../themes/Theme.context';
@@ -191,10 +190,7 @@ export const CalendarView = React.memo(() => {
 
 
     const { theme } = useTheme();
-    const styles = {
-        ...calendarStylesBuilder(theme),
-        ...textStylesBuilder(theme)
-    };
+    const styles = createStyles(theme);
 
     const current_date = new Date();
 
@@ -215,8 +211,6 @@ export const CalendarView = React.memo(() => {
 
     const [dates, setDates] = React.useState([start_date, end_date]);
 
-
-    console.log(graphql.CALENDAR_RESUMED_DATA)
     const { data, error, loading } = useQuery(
         graphql.CALENDAR_RESUMED_DATA,
         {
@@ -243,11 +237,12 @@ export const CalendarView = React.memo(() => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.mediumText}>
-                {period == 'month' ? 'Monthly' : 'Weekly'} Calendar
-            </Text>
-            <ScrollView>
+            <ScrollView
 
+            >
+                <Text style={styles.typeText}>
+                    {period == 'month' ? 'Monthly' : 'Weekly'} Calendar
+                </Text>
                 <View style={styles.buttonsRow}>
                     <Pressable
                         style={styles.navigatorButton}
@@ -269,7 +264,7 @@ export const CalendarView = React.memo(() => {
                         </Text>
                     </Pressable>
                 </View>
-                <Text style={styles.largeText}>
+                <Text style={styles.monthName}>
                     {months[dates[0].getMonth()]}
                 </Text>
                 <BuildCalendarHeader styles={styles} />

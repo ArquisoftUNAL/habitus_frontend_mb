@@ -53,19 +53,7 @@ export const createStyles = (theme: Theme) => {
             alignContent: 'center',
             justifyContent: 'center'
         },
-        typeText: {
-            color: theme.colors.primary,
-            fontWeight: 'bold',
-            fontSize: theme.fontSizes.medium,
-            marginBottom: theme.spacing.smallMedium,
-            textAlign: 'center',
-        },
-        monthName: {
-            color: theme.colors.primary,
-            fontWeight: 'bold',
-            fontSize: theme.fontSizes.large,
-            textAlign: 'center'
-        },
+
         buttonsRow: {
             flexDirection: 'row',
             justifyContent: 'space-between',

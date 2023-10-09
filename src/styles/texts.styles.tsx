@@ -10,6 +10,27 @@ export const createStyles = (theme: Theme) => {
             textAlign: 'center',
             padding: theme.spacing.medium,
         },
+        smallText: {
+            color: theme.colors.primary,
+            fontSize: theme.fontSizes.small,
+            textAlign: 'center',
+            marginTop: theme.spacing.smallMedium,
+            marginBottom: theme.spacing.smallMedium,
+        },
+        mediumText: {
+            color: theme.colors.primary,
+            fontWeight: 'bold',
+            fontSize: theme.fontSizes.medium,
+            marginTop: theme.spacing.smallMedium,
+            marginBottom: theme.spacing.smallMedium,
+            textAlign: 'center',
+        },
+        largeText: {
+            color: theme.colors.primary,
+            fontWeight: 'bold',
+            fontSize: theme.fontSizes.large,
+            textAlign: 'center'
+        },
         inputLabel: {
             backgroundColor: theme.colors.background,
             color: theme.colors.primary,
@@ -38,6 +59,13 @@ export const createStyles = (theme: Theme) => {
             paddingLeft: theme.spacing.medium,
             paddingTop: theme.spacing.medium,
             paddingBottom: theme.spacing.medium,
+        },
+        errorText: {
+            backgroundColor: "pink",
+            color: "red",
+            fontSize: theme.fontSizes.small,
+            textAlign: 'center',
+            padding: theme.spacing.medium,
         }
     });
     return styles;

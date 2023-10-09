@@ -1,7 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Image } from 'react-native';
 import { useTheme } from '../themes/Theme.context';
-import { createStyles } from './../styles/loading.styles';
+import { createStyles } from '../styles/loading.view.styles';
+
+const LoadingGIF = require('./../assets/images/Loading.gif');
 
 export const LoadingView = (): JSX.Element => {
 
@@ -10,9 +12,8 @@ export const LoadingView = (): JSX.Element => {
 
     return (
         <View style={styles.mainLoadingContainer}>
-            <Text style={styles.mainLoadingText}>
-                Your content is being loaded!
-            </Text>
+            <Image source={LoadingGIF} style={styles.imageContainer} />
+            <Text style={styles.mainLoadingText}>Loading...</Text>
         </View>
     );
 }
