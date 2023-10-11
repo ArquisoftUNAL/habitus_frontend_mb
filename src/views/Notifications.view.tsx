@@ -8,14 +8,7 @@ import { LoadingView } from './LoadingView';
 import graphql from './../graphql';
 import { useTheme } from '../themes/Theme.context';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Spacing } from '../components/Spacing';
-
-
-interface CalendarDay {
-    date: string,
-    data: string,
-    relative_frequency: number
-}
+import { GraphQLError } from '../components/GraphQLError';
 
 export const NotificationsView = React.memo(() => {
 
@@ -28,13 +21,9 @@ export const NotificationsView = React.memo(() => {
     // Get habits every time the component is rendered
     const { data, error, loading } = useQuery(graphql.USER_NOTIFICATIONS)
 
-    if (error) return (<Text>
-        {error.message}
-        {error.graphQLErrors.map(({ message }, i) => (
-            message + "\n"
-        ))}
-        Error! {error.clientErrors.join(' ')}
-    </Text>);
+    if (error) return (
+        <GraphQLError error={error} />
+    );
 
     if (loading) return (
         <LoadingView />
@@ -42,13 +31,13 @@ export const NotificationsView = React.memo(() => {
 
     return (
         <View>
-            <Text style={styles.mediumText}>
+            <Text style={styles.largeText}>
                 Notifications
             </Text>
             <ScrollView
                 contentContainerStyle={{ alignItems: 'center' }}
             >
-                {data.getNotifications.map((notification: any, index: any) => {
+                {data.getNotificationsUser.map((notification: any, index: any) => {
                     const date = new Date(notification.noti_init_date);
                     return (
                         <View key={"t_" + index} style={styles.notificationContainer}>

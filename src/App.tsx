@@ -7,6 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LIGHT_THEME } from './themes/Light.theme';
 import { MainView } from './views/Main.view';
 import { LoginView } from './views/LoginView';
+import { RegisterView } from './views/RegisterView';
+import { WelcomeView } from './views/WelcomePage.view'
 
 import { ThemeProvider } from './themes/Theme.context';
 
@@ -56,7 +58,7 @@ function App(): JSX.Element {
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <ThemeProvider initial={LIGHT_THEME}>
                     <NavigationContainer>
-                        <Stack.Navigator initialRouteName="Login">
+                        <Stack.Navigator initialRouteName="Welcome">
                             <Stack.Screen
                                 name="Main" component={MainView}
                                 options={{
@@ -65,6 +67,18 @@ function App(): JSX.Element {
                             />
                             <Stack.Screen
                                 name="Login" component={LoginView}
+                                options={{
+                                    headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="Register" component={RegisterView}
+                                options={{
+                                    headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="Welcome" component={WelcomeView}
                                 options={{
                                     headerShown: false,
                                 }}

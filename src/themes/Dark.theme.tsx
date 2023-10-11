@@ -4,9 +4,9 @@ import {
 
 const DARK_COLOR_THEME: ColorTheme = {
     primary: '#FFFFFF',
-    secondary: '#F6F6A4',
-    tertiary: '#D9D9D9',
-    background: '#D8E0FA'
+    secondary: '#002B99',
+    tertiary: '#002B99',
+    background: '#002B99'
 }
 
 const DARK_SPACING_THEME: SpacingTheme = {

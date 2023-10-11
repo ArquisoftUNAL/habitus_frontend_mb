@@ -186,6 +186,7 @@ interface CalendarDay {
 }
 
 export const CalendarView = React.memo(() => {
+
     const [period, setPeriod] = React.useState('month');
     const [selectedDayData, setSelectedDayData] = React.useState<CalendarDay | null>(null);
 
@@ -215,8 +216,6 @@ export const CalendarView = React.memo(() => {
 
     const [dates, setDates] = React.useState([start_date, end_date]);
 
-
-    console.log(graphql.CALENDAR_RESUMED_DATA)
     const { data, error, loading } = useQuery(
         graphql.CALENDAR_RESUMED_DATA,
         {
@@ -255,7 +254,7 @@ export const CalendarView = React.memo(() => {
                             switchPrevious({ period, dates, setDates });
                         }}>
                         <Text style={styles.navigationButtonText}>
-                            {"<"}
+                            {"Previous"}
                         </Text>
                     </Pressable>
 
@@ -265,7 +264,7 @@ export const CalendarView = React.memo(() => {
                             switchNext({ period, dates, setDates });
                         }}>
                         <Text style={styles.navigationButtonText}>
-                            {">"}
+                            {"Next"}
                         </Text>
                     </Pressable>
                 </View>

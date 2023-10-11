@@ -16,14 +16,17 @@ export const CustomButton: React.FC<ButtonProps> = ({ title, type, action }) => 
     const styles = createStyles(theme);
 
     const buttonStyle = type === 'primary' ? styles.primary : styles.secondary;
+    const textStyle = type === 'primary' ? styles.primaryText : styles.secondaryText;
 
     return (
-        <View>
+        <View style={{
+            alignItems: 'center',
+        }}>
             <Pressable
                 style={buttonStyle}
                 onPress={action}
             >
-                <Text style={styles.buttonLabel}>
+                <Text style={textStyle}>
                     {title}
                 </Text>
             </Pressable>

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Modal, Pressable, Text, View } from 'react-native';
 import { useQuery, useLazyQuery } from '@apollo/client';
 import Accordion from 'react-native-collapsible/Accordion';
 
@@ -9,8 +9,9 @@ import { LoadingView } from './LoadingView';
 import graphql from './../graphql';
 import { useTheme } from '../themes/Theme.context';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Spacing } from '../components/Spacing';
 import { CustomButton } from './../components/Button';
+import { Label } from '../components/texts';
+import { TextFieldInput } from '../components/inputs';
 
 const CollapsableHabitsContainer = memo(({ habits, chosenHabit }: any) => {
     const [selected, setSelected] = React.useState<any[]>([]);
@@ -35,7 +36,6 @@ const CollapsableHabitsContainer = memo(({ habits, chosenHabit }: any) => {
     }
 
     const updateSections = (activeSections: any) => {
-        console.log("pasa")
         setSelected(activeSections);
     }
 
@@ -71,6 +71,57 @@ const CollapsableHabitsContainer = memo(({ habits, chosenHabit }: any) => {
             align="center"
             duration={100}
         />
+    );
+});
+
+const AddAchievementContainer = memo(() => {
+    const { theme } = useTheme();
+
+    const [modalVisible, setModalVisible] = React.useState(false);
+    const [achievementName, setAchievementName] = React.useState("");
+
+    const styles = {
+        ...achievementsStylesBuilder(theme),
+        ...textStylesBuilder(theme)
+    };
+
+    return (
+        <View style={styles.achievementsContainer}>
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.addAchievementContainer}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.mediumText}>
+                            Register an achievement for this habit!
+                        </Text>
+                        <Label title="Set a name for your habit!" />
+                        <TextFieldInput title="Password" masked={true} onChange={
+                            (value: string) => setAchievementName(value)
+                        } />
+                        <CustomButton
+                            title="Close"
+                            action={() => setModalVisible(false)}
+                            type="primary"
+                        />
+                    </View>
+                </View >
+
+            </Modal >
+            <Text style={styles.mediumText}>
+                Seems like you haven't create an achievement tracker for this habit yet
+            </Text>
+            <CustomButton
+                title="Create achievement tracker"
+                action={() => {
+                    setModalVisible(true);
+                }}
+                type="primary"
+            />
+        </View >
     );
 });
 
@@ -168,11 +219,7 @@ export const AchievementsView = React.memo(() => {
         );
 
         return (
-            <View style={styles.achievementsContainer}>
-                <Text style={styles.mediumText}>
-                    No achievements for this habit
-                </Text>
-            </View>
+            <AddAchievementContainer />
         );
 
     }
@@ -224,7 +271,7 @@ export const AchievementsView = React.memo(() => {
 
     return (
         <View style={styles.mainContainer}>
-            <Text style={styles.mediumText}>
+            <Text style={styles.largeText}>
                 Achievements and Milestones
             </Text>
             <CollapsableHabitsContainer

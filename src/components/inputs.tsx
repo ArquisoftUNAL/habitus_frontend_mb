@@ -8,10 +8,11 @@ import { TextInput } from 'react-native-gesture-handler';
 interface InputProps {
     title: string;
     masked?: boolean;
+    value?: string;
     onChange?: (value: string) => void;
 }
 
-export const TextFieldInput: React.FC<InputProps> = ({ title, masked, onChange }) => {
+export const TextFieldInput: React.FC<InputProps> = ({ title, masked, onChange, value }) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -23,6 +24,7 @@ export const TextFieldInput: React.FC<InputProps> = ({ title, masked, onChange }
                 placeholder={title}
                 secureTextEntry={masked}
                 onChangeText={onChange}
+                value={value}
             />
         </View>
     );

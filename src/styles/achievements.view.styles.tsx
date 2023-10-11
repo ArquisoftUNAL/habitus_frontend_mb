@@ -69,6 +69,27 @@ export const createStyles = (theme: Theme) => {
             borderBottomWidth: 1,
             borderBottomColor: theme.colors.primary,
         },
+        addAchievementContainer: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: theme.colors.background,
+            height: "100%",
+            width: "100%",
+            paddingHorizontal: theme.spacing.small,
+            paddingVertical: theme.spacing.small,
+        },
+        modalView: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: theme.colors.secondary,
+            height: "50%",
+            width: "50%",
+            paddingHorizontal: theme.spacing.small,
+            paddingVertical: theme.spacing.small,
+            borderWidth: 1,
+            borderColor: theme.colors.primary,
+            borderRadius: 20,
+        }
     });
     return styles;
 };

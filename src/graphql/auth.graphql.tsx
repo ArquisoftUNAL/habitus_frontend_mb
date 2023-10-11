@@ -21,14 +21,17 @@ const REGISTER = gql`
         $name: String!
         $birthDay: String!  
     ) {
-        registerUser(
+        createUser(
             user : {
                 email: $email
                 password: $password
                 name: $name
                 birthDay: $birthDay
             }
-        )
+        ) {
+            _id
+            jwt
+        }
     }
 `;
 

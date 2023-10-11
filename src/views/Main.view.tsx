@@ -9,11 +9,13 @@ import graphql from '../graphql';
 import { CalendarView } from './Calendar.view';
 import { AchievementsView } from './Achievements.view';
 import { NotificationsView } from './Notifications.view';
+import { HabitsView } from './Habits.views';
 import { IconComponentAsFunction } from '../components/Icon';
 import { createStyles } from './../styles/main.view.styles';
 import { UserInfoHeader } from '../components/UserInfoHeader';
 import { removeAuthToken } from '../storage/authToken';
 import { LoadingView } from './LoadingView';
+import { CreateHabitView } from './CreateHabit.view';
 
 const Drawer = createDrawerNavigator();
 
@@ -124,7 +126,10 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
     )
 }
 
-export const MainView = (): JSX.Element => {
+interface MainProps {
+    navigation: any
+}
+export const MainView = React.memo<MainProps>(({ navigation }) => {
     const { theme, toggleTheme } = useTheme();
     const styles = createStyles(theme);
 
@@ -134,12 +139,13 @@ export const MainView = (): JSX.Element => {
 
     const [fetchUserData, { loading, error, data }] = useLazyQuery(graphql.GET_USER);
 
-    if (loading || !data) {
-        return <LoadingView />;
+    if (error) {
+        // Redirect to login
+        navigation.navigate('Login');
     }
 
-    if (error) {
-        return <View><Text>{error.message}</Text></View>
+    if (loading || !data) {
+        return <LoadingView />;
     }
 
     return (
@@ -160,11 +166,20 @@ export const MainView = (): JSX.Element => {
             />}
         >
             <Drawer.Screen
-                name="Your Habits"
-                component={CalendarView}
+                name="Habits"
+                component={HabitsView}
                 options={{
                     drawerLabel: 'Your Habits',
                     title: "Your Habits",
+                    drawerIcon: IconComponentAsFunction({ name: 'android' })
+                }}
+            />
+            <Drawer.Screen
+                name="AddHabit"
+                component={CreateHabitView}
+                options={{
+                    drawerLabel: 'Add an habit',
+                    title: "Adding an habit",
                     drawerIcon: IconComponentAsFunction({ name: 'android' })
                 }}
             />
@@ -211,4 +226,4 @@ export const MainView = (): JSX.Element => {
             />
         </Drawer.Navigator>
     );
-};
+});
