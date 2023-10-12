@@ -6,6 +6,11 @@ export const createStyles = (theme: Theme) => {
         container: {
             backgroundColor: theme.colors.background,
             height: '100%',
+        },
+        habitusLogo: {
+            width: '30%',
+            height: '20%',
+            borderRadius: 100,
         }
     });
     return styles;

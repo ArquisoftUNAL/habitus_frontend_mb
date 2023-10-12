@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Modal, Text, View } from 'react-native';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { CommonActions } from '@react-navigation/native';
 import Accordion from 'react-native-collapsible/Accordion';
@@ -9,6 +9,7 @@ import { Label } from '../components/texts';
 import { useTheme } from '../themes/Theme.context';
 import { createStyles as habitsViewStylesBuilder } from '../styles/habits.view.styles';
 import { createStyles as textStylesBuilder } from '../styles/texts.styles';
+import { createStyles as containerStylesBuilder } from '../styles/container.styles';
 import { TextFieldInput } from '../components/inputs';
 import { Spacing } from '../components/Spacing';
 import { CustomButton } from '../components/Button';
@@ -16,7 +17,8 @@ import { getAuthToken, setAuthToken } from '../storage/authToken';
 import { ScrollView } from 'react-native-gesture-handler';
 import { GraphQLError } from '../components/GraphQLError';
 import { LoadingView } from './LoadingView';
-
+import { Separator } from '../components/Separator';
+import { CreateUpdateHabitView } from './CreateUpdateHabit.view';
 
 interface HabitsViewProps {
     navigation: any;
@@ -33,10 +35,12 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
     const styles = {
         ...habitsViewStylesBuilder(theme),
         ...textStylesBuilder(theme),
+        ...containerStylesBuilder(theme),
     };
 
     // Expandable habits
     const [selected, setSelected] = React.useState<any[]>([]);
+    const [modalHabitState, setModalHabitState] = React.useState<boolean>(false);
 
     const endDate = new Date();
     const startDate = (new Date(endDate)).setDate(endDate.getDate() - DAYS_OFFSET);
@@ -88,6 +92,16 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
         habitData[data.hab_dat_id] = data;
     });
 
+    // Generate dates to be rendered
+    const dates: string[] = [];
+    const currentDate = new Date();
+    for (let i = 0; i < DAYS_OFFSET; i++) {
+        currentDate.setDate(currentDate.getDate() - 1);
+
+        const currentDateString = currentDate.toISOString().split('T')[0];
+        dates.push(currentDateString);
+    }
+
     // Build sections
     const sections = Object.keys(habits).map((habitId: string) => {
         const habit = habits[habitId];
@@ -105,28 +119,47 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
 
     // Render section title
     const renderSectionTitle = (section: any) => {
+        // Check habit color
+        const regex = /(#[0-9A-F]{6})/i;
+
+        const matches = regex.exec(section.habit.hab_color);
+
+        let color = theme.colors.primary;
+
+        if (matches) {
+            color = matches[0];
+        }
+
         return (
-            <View>
-                <Text>
-                    {section.habit.hab_name} in Category {section.category.cat_name}
-                </Text>
+            <View style={styles.accordionHeader}>
+                <View style={styles.accordionHeaderRow}>
+                    <Text style={styles.accordionHeaderText}>
+                        {section.habit.hab_name}
+                    </Text>
+                </View>
             </View>
         );
     };
 
     // Render section content
     const renderContent = (section: any) => {
+
         return (
             <View>
                 <ScrollView>
                     {
-                        section.data.map((dataId: string) => {
-                            const dataItem = habitData[dataId];
+                        dates.map((date: string) => {
+                            const dataItem = section.data.find(
+                                (dataItem: any) => dataItem.hab_dat_collected_at === date
+                            )
+
                             return (
-                                <View key={dataId}>
+                                <View key={section.habit.hab_id + " " + date}>
                                     <Text>
-                                        {dataItem.hab_dat_collected_at}
-                                        {dataItem.hab_dat_amount}
+                                        {date}
+                                    </Text>
+                                    <Text>
+                                        {dataItem ? dataItem.hab_dat_amount : "No data"}
                                     </Text>
                                 </View>
                             )
@@ -142,8 +175,26 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
         setSelected(activeSections);
     };
 
+    console.log(selected);
+
     return (
-        <View>
+        <View style={styles.fullPage}>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalHabitState}
+                onRequestClose={() => {
+                    setModalHabitState(false);
+                }}
+            >
+                <CreateUpdateHabitView
+                    type="create"
+                    onClose={() => {
+                        setModalHabitState(false);
+                    }}
+                />
+            </Modal>
+
             <Text style={styles.largeText}>
                 Habits
             </Text>
@@ -152,32 +203,48 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
 
             <CustomButton
                 title="Add habit"
-                type="primary"
+                type="secondary"
                 action={() => {
-                    navigation.navigate('AddHabit');
+                    setModalHabitState(true);
                 }}
             />
 
             <Spacing size={20} />
 
-            <ScrollView>
-                <Accordion
-                    sections={sections}
-                    activeSections={selected}
-                    renderSectionTitle={() => (<></>)}
-                    renderHeader={renderSectionTitle}
-                    renderContent={renderContent}
-                    onChange={updateSections}
-                    containerStyle={styles.accordeonStyle}
-                    sectionContainerStyle={styles.accordeonHeader}
-                    underlayColor={"transparent"}
-                    align="center"
-                    duration={100}
-                    expandMultiple={true}
-                />
-            </ScrollView>
-        </View>
+            <View>
+                <ScrollView
+                    contentContainerStyle={styles.accordionSuperContainer}
+                >
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    <Separator />
+                    {/* <Accordion
+                        sections={sections}
+                        activeSections={selected}
+                        renderSectionTitle={() => (<></>)}
+                        renderHeader={renderSectionTitle}
+                        renderContent={renderContent}
+                        containerStyle={styles.accordionContainer}
+                        sectionContainerStyle={styles.accordionSectionContainer}
+                        onChange={updateSections}
+                        underlayColor={"transparent"}
+                        align="center"
+                        duration={100}
+                        expandMultiple={true}
+                    /> */}
 
-
+                </ScrollView >
+            </View>
+        </View >
     );
 })

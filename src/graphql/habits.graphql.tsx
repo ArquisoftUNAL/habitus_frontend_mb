@@ -31,6 +31,7 @@ const USER_HABITS_FULL_DATA = gql`
             hab_name
             hab_description
             hab_is_yn
+            hab_color
         }
 
         habitdataByUser(
@@ -82,4 +83,32 @@ const ADD_HABIT = gql`
     }
 `;
 
-export default { USER_HABITS, ADD_HABIT, USER_HABITS_FULL_DATA };
+const UPDATE_HABIT = gql`
+    mutation UpdateHabit (
+        $id: String!
+        $name: String
+        $description: String
+        $is_favorite: Boolean
+        $is_yn: Boolean
+        $color: String
+        $goal: Float
+        $units: String
+        $frequency_type: String
+        $category: String
+    ) {
+        addHabit (
+            habit: {
+                name: $name
+                description: $description
+                is_yn: $is_yn
+                color: $color
+                goal: $goal
+                units: $units
+                frequency_type: $frequency_type
+                category: $category
+            }
+        )
+    }
+`;
+
+export default { USER_HABITS, ADD_HABIT, UPDATE_HABIT, USER_HABITS_FULL_DATA };

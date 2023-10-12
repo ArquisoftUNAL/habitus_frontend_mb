@@ -271,7 +271,7 @@ export const AchievementsView = React.memo(() => {
 
     return (
         <View style={styles.mainContainer}>
-            <Text style={styles.largeText}>
+            <Text style={styles.largeText} numberOfLines={3}>
                 Achievements and Milestones
             </Text>
             <CollapsableHabitsContainer

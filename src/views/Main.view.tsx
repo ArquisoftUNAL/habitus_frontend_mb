@@ -15,7 +15,9 @@ import { createStyles } from './../styles/main.view.styles';
 import { UserInfoHeader } from '../components/UserInfoHeader';
 import { removeAuthToken } from '../storage/authToken';
 import { LoadingView } from './LoadingView';
-import { CreateHabitView } from './CreateHabit.view';
+import { StatisticsView } from './Statistics.view';
+import { UpdateUserView } from './UpdateUserdata.view';
+import { CreateUpdateHabitView } from './CreateUpdateHabit.view';
 
 const Drawer = createDrawerNavigator();
 
@@ -175,15 +177,6 @@ export const MainView = React.memo<MainProps>(({ navigation }) => {
                 }}
             />
             <Drawer.Screen
-                name="AddHabit"
-                component={CreateHabitView}
-                options={{
-                    drawerLabel: 'Add an habit',
-                    title: "Adding an habit",
-                    drawerIcon: IconComponentAsFunction({ name: 'android' })
-                }}
-            />
-            <Drawer.Screen
                 name="Calendar"
                 component={CalendarView}
                 options={{
@@ -202,7 +195,7 @@ export const MainView = React.memo<MainProps>(({ navigation }) => {
             />
             <Drawer.Screen
                 name="Statistics"
-                component={CalendarView}
+                component={StatisticsView}
                 options={{
                     drawerLabel: 'Statistics',
                     title: "Statistics"
@@ -218,7 +211,7 @@ export const MainView = React.memo<MainProps>(({ navigation }) => {
             />
             <Drawer.Screen
                 name="My Account"
-                component={CalendarView}
+                component={UpdateUserView}
                 options={{
                     drawerLabel: 'My account',
                     title: "My account"

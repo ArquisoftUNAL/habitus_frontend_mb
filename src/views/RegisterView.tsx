@@ -16,7 +16,7 @@ import { getAuthToken, setAuthToken } from '../storage/authToken';
 import { LoadingView } from './LoadingView';
 import { GraphQLError } from '../components/GraphQLError';
 
-interface LoginViewProps {
+interface RegisterViewProps {
     navigation: any;
 };
 
@@ -31,7 +31,7 @@ const redirectRegister = (navigation: any) => {
     );
 }
 
-export const RegisterView: React.FC<LoginViewProps> = ({ navigation }) => {
+export const RegisterView: React.FC<RegisterViewProps> = ({ navigation }) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);

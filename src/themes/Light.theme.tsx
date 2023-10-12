@@ -23,7 +23,7 @@ const LIGHT_FONT_SIZE_THEME = {
     small: 15,
     medium: 20,
     mediumLarge: 30,
-    large: 60
+    large: 45
 }
 
 const LIGHT_IMAGE_THEME = {

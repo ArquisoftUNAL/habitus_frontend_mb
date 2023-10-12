@@ -50,16 +50,86 @@ export const createStyles = (theme: Theme) => {
         },
 
         // Accordeon case
-        accordeonStyle: {
+        accordionSuperContainer: {
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: '100%',
+            height: '100%',
+            backgroundColor: theme.colors.background,
+            paddingHorizontal: '1%',
+        },
+        accordionContainer: {
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%',
+            backgroundColor: theme.colors.tertiary,
+            marginHorizontal: 0,
+            paddingHorizontal: 0
+        },
+        accordionSectionContainer: {
+            flex: 1,
+            alignItems: 'center',
+            width: '100%',
+            minHeight: '50%',
+            maxHeight: '100%',
+            backgroundColor: theme.colors.tertiary,
+            marginVertical: 10,
+            paddingHorizontal: 0,
+            paddingVertical: 0,
+        },
+        accordionHeader: {
+            flex: 1,
+            flexDirection: 'row',
             backgroundColor: theme.colors.background,
             borderWidth: 1,
             borderColor: theme.colors.primary,
+            borderRadius: 5,
+            minWidth: '100%',
+            paddingHorizontal: 10,
         },
-        accordeonHeader: {
-            backgroundColor: theme.colors.primary,
-            borderWidth: 1,
-            borderColor: theme.colors.background,
+        accordionHeaderRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '10%',
         },
+        accordionHeaderText: {
+            flex: 1,
+            width: '100%',
+            fontSize: theme.fontSizes.medium,
+            fontWeight: 'bold',
+            textAlign: 'center',
+        },
+        container: {
+            backgroundColor: theme.colors.background,
+            height: '100%',
+        },
+        colorPickerContainer: {
+            padding: theme.spacing.medium,
+        },
+        colorPickerCircleContainer: {
+            padding: theme.spacing.medium,
+            paddintTop: theme.spacing.extraLarge,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        colorPickerBoxContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: "20%",
+            marginTop: "20%",
+            width: '60%',
+            height: '60%',
+        },
+        colorText: {
+            fontSize: theme.fontSizes.medium,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            paddingTop: theme.spacing.medium,
+        }
     });
     return styles;
 };

@@ -4,6 +4,7 @@ import { useQuery, useLazyQuery } from '@apollo/client';
 
 import { createStyles as notificationsStylesBuilder } from './../styles/notifications.view.styles';
 import { createStyles as textStylesBuilder } from '../styles/texts.styles';
+import { createStyles as containerStylesBuilder } from '../styles/container.styles';
 import { LoadingView } from './LoadingView';
 import graphql from './../graphql';
 import { useTheme } from '../themes/Theme.context';
@@ -16,6 +17,7 @@ export const NotificationsView = React.memo(() => {
     const styles = {
         ...notificationsStylesBuilder(theme),
         ...textStylesBuilder(theme),
+        ...containerStylesBuilder(theme),
     }
 
     // Get habits every time the component is rendered
@@ -30,7 +32,7 @@ export const NotificationsView = React.memo(() => {
     );
 
     return (
-        <View>
+        <View style={styles.fullPage}>
             <Text style={styles.largeText}>
                 Notifications
             </Text>

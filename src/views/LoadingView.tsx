@@ -12,7 +12,11 @@ export const LoadingView = (): JSX.Element => {
 
     return (
         <View style={styles.mainLoadingContainer}>
-            <Image source={LoadingGIF} style={styles.imageContainer} />
+            <Image source={
+                {
+                    uri: "https://cdn.pixabay.com/animation/2023/03/20/02/45/02-45-27-186_512.gif"
+                }
+            } style={styles.imageContainer} />
             <Text style={styles.mainLoadingText}>Loading...</Text>
         </View>
     );
