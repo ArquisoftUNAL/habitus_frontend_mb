@@ -9,7 +9,7 @@ const HABIT_ACHIEVEMENTS = gql`
         ) {
             data {
                 currentStreak
-                maxStreak
+                highestStreak
                 name
             }
         }

@@ -5,6 +5,7 @@ import HabitsOperations from './habits.graphql'
 import NotificationsOperations from './notifications.graphql';
 import CategoriesOperations from './categories.graphql';
 import HabitDataOperations from './data.graphql';
+import StatisticsOperations from './statistics.graphql';
 
 export default {
     ...CalendarOperations,
@@ -13,5 +14,6 @@ export default {
     ...HabitsOperations,
     ...NotificationsOperations,
     ...CategoriesOperations,
-    ...HabitDataOperations
+    ...HabitDataOperations,
+    ...StatisticsOperations
 };

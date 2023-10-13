@@ -10,7 +10,7 @@ import { useTheme } from '../themes/Theme.context';
 import { createStyles as habitsViewStylesBuilder } from '../styles/habits.view.styles';
 import { createStyles as textStylesBuilder } from '../styles/texts.styles';
 import { createStyles as containerStylesBuilder } from '../styles/container.styles';
-import { TextFieldInput } from '../components/inputs';
+import { SmallTextFieldInput, CheckBoxInput } from '../components/inputs';
 import { Spacing } from '../components/Spacing';
 import { CustomButton } from '../components/Button';
 import { getAuthToken, setAuthToken } from '../storage/authToken';
@@ -26,6 +26,7 @@ interface HabitsViewProps {
 
 const PAGE_LIMIT = 1000;
 const DAYS_OFFSET = 30;
+const ALLOWED_BACKDAYS = 1;
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -148,7 +149,7 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
             <View>
                 <ScrollView>
                     {
-                        dates.map((date: string) => {
+                        dates.map((date: string, index: number) => {
                             const dataItem = section.data.find(
                                 (dataItem: any) => dataItem.hab_dat_collected_at === date
                             )
@@ -158,9 +159,22 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                                     <Text>
                                         {date}
                                     </Text>
-                                    <Text>
-                                        {dataItem ? dataItem.hab_dat_amount : "No data"}
-                                    </Text>
+                                    {
+                                        section.habit.hab_is_yn ?
+                                            <SmallTextFieldInput
+                                                title="Yes/No"
+                                                masked={false}
+                                                enabled={index < ALLOWED_BACKDAYS}
+                                                onChange={() => { }}
+                                                value={dataItem ? dataItem.hab_dat_value : ""}
+                                            />
+                                            :
+                                            <CheckBoxInput
+                                                enabled={index < ALLOWED_BACKDAYS}
+                                                onChange={() => { }}
+                                                value={dataItem ? dataItem.hab_dat_value : ""}
+                                            />
+                                    }
                                 </View>
                             )
                         })
@@ -174,8 +188,6 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
     const updateSections = (activeSections: any) => {
         setSelected(activeSections);
     };
-
-    console.log(selected);
 
     return (
         <View style={styles.fullPage}>
@@ -215,6 +227,7 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                 <ScrollView
                     contentContainerStyle={styles.accordionSuperContainer}
                 >
+                    {/* <Separator />
                     <Separator />
                     <Separator />
                     <Separator />
@@ -226,9 +239,8 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                     <Separator />
                     <Separator />
                     <Separator />
-                    <Separator />
-                    <Separator />
-                    {/* <Accordion
+                    <Separator /> */}
+                    <Accordion
                         sections={sections}
                         activeSections={selected}
                         renderSectionTitle={() => (<></>)}
@@ -241,7 +253,7 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                         align="center"
                         duration={100}
                         expandMultiple={true}
-                    /> */}
+                    />
 
                 </ScrollView >
             </View>

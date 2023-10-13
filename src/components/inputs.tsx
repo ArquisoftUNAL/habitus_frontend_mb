@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ModalDropdown from 'react-native-modal-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 
 import { useTheme } from '../themes/Theme.context';
 import { createStyles } from '../styles/inputs.styles';
@@ -11,10 +12,11 @@ interface TextInputProps {
     title: string;
     masked?: boolean;
     value?: string;
+    enabled?: boolean;
     onChange?: (value: string) => void;
 }
 
-export const TextFieldInput: React.FC<TextInputProps> = ({ title, masked, onChange, value }) => {
+export const TextFieldInput: React.FC<TextInputProps> = ({ title, masked, enabled, onChange, value }) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -27,10 +29,30 @@ export const TextFieldInput: React.FC<TextInputProps> = ({ title, masked, onChan
                 secureTextEntry={masked}
                 onChangeText={onChange}
                 value={value}
+                editable={enabled}
             />
         </View>
     );
 };
+
+export const SmallTextFieldInput: React.FC<TextInputProps> = ({ title, masked, enabled, onChange, value }) => {
+
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
+
+    return (
+        <View>
+            <TextInput
+                style={styles.smallTextInput}
+                placeholder={title}
+                secureTextEntry={masked}
+                onChangeText={onChange}
+                value={value}
+                editable={enabled}
+            />
+        </View>
+    );
+}
 
 interface ConstantSelectInputProps {
     value: boolean;
@@ -73,65 +95,56 @@ export const BinaryConstantSelectInput: React.FC<ConstantSelectInputProps> = ({
 
 interface ComboBoxInputProps {
     items: any[];
-    onChange?: (item: any) => void;
+    onChange: (item: any) => void;
+    value: any;
 };
 
-export const ComboBoxInput: React.FC<ComboBoxInputProps> = ({ items, onChange }) => {
+export const ComboBoxInput: React.FC<ComboBoxInputProps> = ({ items, value, onChange }) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
-    const [open, setOpen] = React.useState<boolean>(false);
-    const [selected, setSelected] = React.useState<any>(items[0]);
-
     return (
         <View style={styles.comboContainer}>
-            <DropDownPicker
-                open={open}
-                value={selected}
-                items={items}
-                setOpen={setOpen}
-                setValue={setSelected}
-                onChangeValue={onChange}
+            <Dropdown
                 style={styles.comboStyle}
-                textStyle={styles.comboText}
+                data={items}
+                maxHeight={200}
+                labelField={"label"}
+                valueField={"value"}
+                onChange={item => {
+                    onChange(item)
+                }}
+                value={value}
+                selectedTextStyle={styles.comboText}
+                placeholder={"⬇️ Please select"}
             />
         </View>
     );
 };
 
-export const ComboBoxInput2: React.FC<ComboBoxInputProps> = ({ items, onChange }) => {
+interface CheckBoxInputProps {
+    value: boolean;
+    enabled?: boolean;
+    onChange: (value: boolean) => void;
+}
+
+export const CheckBoxInput: React.FC<CheckBoxInputProps> = ({ value, enabled, onChange }) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
     return (
-        <View style={styles.comboContainer}>
-            <ModalDropdown
-                options={items}
-                defaultIndex={0}
-                multipleSelect={false}
-                saveScrollPosition={true}
-                renderRow={(item: any) => {
-                    console.log(item)
-                    return (
-                        <Text style={styles.comboText}>{item.label}</Text>
-                    );
+        <View style={styles.checkBoxContainer}>
+            <Pressable
+                style={styles.checkBox}
+                onPress={() => {
+                    onChange(!value);
                 }}
-                renderButtonText={(item: any) => {
-                    return "⬇️ " + item.label;
-                }}
-                defaultValue='⬇️ Please select'
-                renderRowText={(item: any) => {
-                    return item.label;
-                }}
-                style={styles.comboStyle}
-                onSelect={(index: string, item: any) => {
-                    onChange && onChange(item.value);
-                }}
-                textStyle={styles.comboText}
-                numberOfLines={items.length}
-            />
+                disabled={!enabled}
+            >
+                {value && <View style={styles.checkBoxChecked} />}
+            </Pressable>
         </View>
     );
 };

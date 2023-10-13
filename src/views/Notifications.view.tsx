@@ -23,6 +23,7 @@ export const NotificationsView = React.memo(() => {
     // Get habits every time the component is rendered
     const { data, error, loading } = useQuery(graphql.USER_NOTIFICATIONS)
 
+
     if (error) return (
         <GraphQLError error={error} />
     );

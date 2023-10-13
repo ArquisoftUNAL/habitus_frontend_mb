@@ -1,0 +1,31 @@
+import { gql } from '@apollo/client';
+
+const GET_HABIT_STATISTICS = gql`
+    query GetWholeStatistics(
+        $hab_id: String!
+    ) {
+        resumeMeasureHabit(
+            id: $hab_id
+        ){
+            toDay { percentage, progress, remaining }
+            week { percentage, progress, remaining }
+            month { percentage, progress, remaining }
+            year { percentage, progress, remaining }
+        }
+
+        resumeYnHabit(
+            id: $hab_id
+        ){
+            month
+            semester
+        }
+
+        measureStreaks(
+            id: $hab_id
+        ){
+            data
+        }
+    }
+`;
+
+export default { GET_HABIT_STATISTICS };

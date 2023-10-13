@@ -3,6 +3,12 @@ import { Theme } from '../themes/Theme.interface';
 
 export const createStyles = (theme: Theme) => {
     const styles = StyleSheet.create({
+        smallTextInput: {
+            backgroundColor: theme.colors.background,
+            color: theme.colors.primary,
+            fontSize: theme.fontSizes.small,
+            textAlign: 'center',
+        },
         largeTextInput: {
             backgroundColor: theme.colors.background,
             color: theme.colors.primary,
@@ -69,8 +75,6 @@ export const createStyles = (theme: Theme) => {
 
         // Combo box
         comboContainer: {
-            flex: 1,
-            flexDirection: 'row',
             borderRadius: 40,
             borderWidth: 2,
             borderColor: theme.colors.primary,
@@ -81,15 +85,25 @@ export const createStyles = (theme: Theme) => {
             paddingVertical: theme.spacing.small,
             paddingLeft: theme.spacing.medium,
         },
-        comboContainerStyle: {
-
-        },
         comboStyle: {
-
         },
         comboText: {
             color: theme.colors.primary,
             fontSize: theme.fontSizes.medium,
+        },
+
+        // Checkbox
+        checkBoxContainer: {
+            borderRadius: 40,
+            borderWidth: 2,
+            borderColor: theme.colors.primary,
+            backgroundColor: theme.colors.background,
+        },
+        checkBox: {
+
+        },
+        checkBoxChecked: {
+            backgroundColor: theme.colors.primary,
         }
     });
     return styles;

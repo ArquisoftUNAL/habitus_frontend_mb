@@ -12,8 +12,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { CustomButton } from './../components/Button';
 import { Label } from '../components/texts';
 import { TextFieldInput } from '../components/inputs';
+import { GraphQLError } from '../components/GraphQLError';
 
-const CollapsableHabitsContainer = memo(({ habits, chosenHabit }: any) => {
+const CollapsableHabitsContainer = memo(({ habits, chosenHabit, onHabitChange }: any) => {
     const [selected, setSelected] = React.useState<any[]>([]);
     const { theme } = useTheme();
 
@@ -28,8 +29,8 @@ const CollapsableHabitsContainer = memo(({ habits, chosenHabit }: any) => {
     const renderSectionTitle = () => {
         return (
             <View>
-                <Text>
-                    {selected.length !== 0 ? "Chosen habit: " + chosenHabit.hab_name : "Choose an habit"}
+                <Text style={styles.smallText}>
+                    {(selected.length !== 0 && chosenHabit.hab_name) ? "Chosen habit: " + chosenHabit.hab_name : "Choose an habit"}
                 </Text>
             </View>
         );
@@ -45,15 +46,20 @@ const CollapsableHabitsContainer = memo(({ habits, chosenHabit }: any) => {
                 <ScrollView>
                     {
                         habits.map((habit: any) => (
-                            <Pressable key={habit.hab_id}>
-                                <Text>
+                            <Pressable
+                                key={habit.hab_id}
+                                onPress={() => {
+                                    onHabitChange(habit);
+                                }}
+                            >
+                                <Text style={styles.smallText}>
                                     {habit.hab_name}
                                 </Text>
                             </Pressable>
                         ))
                     }
                 </ScrollView>
-            </View>
+            </View >
         );
     }
 
@@ -141,41 +147,16 @@ export const AchievementsView = React.memo(() => {
 
     // Fetch achievements on habit change
     const [fetchAchievements, { data: achievementData, error: achievementError, loading: achievementLoading }] = useLazyQuery(
-        graphql.HABIT_ACHIEVEMENTS,
-        {
-            variables: { id: habit.hab_id },
-            onCompleted: (data: any) => {
-                const achievement = data.achievementsByHabit.data[0];
-                if (achievement) {
-                    setAchievement(achievement);
-                    fetchMilestones();
-                }
-            }
-        }
+        graphql.HABIT_ACHIEVEMENTS
     );
 
     // Fetch milestones on achievement change
     const [fetchMilestones, { data: milestonesData, error: milestonesError, loading: milestonesLoading }] = useLazyQuery(
-        graphql.ACHIEVEMENT_MILESTONES,
-        {
-            variables: { id: achievement.ach_id },
-            onCompleted: (data: any) => {
-                const milestones = data.milestonesByAchievement.data;
-                if (milestones) {
-                    setMilestones(milestones);
-                }
-            }
-        }
+        graphql.ACHIEVEMENT_MILESTONES
     );
 
     if (habitError) return (
-        <Text>
-            {habitError.message}
-            {habitError.graphQLErrors.map(({ message }, i) => (
-                message + "\n"
-            ))}
-            Error! {habitError.clientErrors.join(' ')}
-        </Text>
+        <GraphQLError error={habitError} />
     );
 
     if (habitLoading) return (
@@ -202,13 +183,9 @@ export const AchievementsView = React.memo(() => {
             </View>
         );
 
-        if (achievementError) return (
-            <View style={styles.achievementsContainer}>
-                <Text style={styles.mediumText}>
-                    {achievementError.message}
-                </Text>
-            </View>
-        );
+        if (achievementError) {
+            return (<GraphQLError error={achievementError} />);
+        };
 
         if (habit.hab_id === "") return (
             <View style={styles.achievementsContainer}>
@@ -253,11 +230,7 @@ export const AchievementsView = React.memo(() => {
         );
 
         if (milestonesError) return (
-            <View style={styles.milestonesContainer}>
-                <Text style={styles.mediumText}>
-                    {milestonesError.message}
-                </Text>
-            </View>
+            <GraphQLError error={milestonesError} />
         );
 
         if (achievement.ach_id === "") return (
@@ -271,20 +244,42 @@ export const AchievementsView = React.memo(() => {
 
     return (
         <View style={styles.mainContainer}>
-            <Text style={styles.largeText} numberOfLines={3}>
-                Achievements and Milestones
-            </Text>
-            <CollapsableHabitsContainer
-                habits={habitData.habitsByUser}
-                chosenHabit={habit}
-                onHabitChange={(habit: any) => {
-                    setHabit(habit);
-                    fetchAchievements();
-                }}
-            />
-            <AchievementComponent />
-            <MilestonesComponent />
-
+            <ScrollView>
+                <Text style={styles.largeText} numberOfLines={3}>
+                    Achievements and Milestones
+                </Text>
+                <CollapsableHabitsContainer
+                    habits={habitData.habitsByUser}
+                    chosenHabit={habit}
+                    onHabitChange={(habit: any) => {
+                        setHabit(habit);
+                        fetchAchievements(
+                            {
+                                variables: { id: habit.hab_id },
+                                onCompleted: (data: any) => {
+                                    const achievement = data.achievementsByHabit.data[0];
+                                    if (achievement) {
+                                        setAchievement(achievement);
+                                        fetchMilestones(
+                                            {
+                                                variables: { id: achievement.ach_id },
+                                                onCompleted: (data: any) => {
+                                                    const milestones = data.milestonesByAchievement.data;
+                                                    if (milestones) {
+                                                        setMilestones(milestones);
+                                                    }
+                                                }
+                                            }
+                                        );
+                                    }
+                                }
+                            }
+                        );
+                    }}
+                />
+                <AchievementComponent />
+                <MilestonesComponent />
+            </ScrollView>
         </View >
     );
 });
