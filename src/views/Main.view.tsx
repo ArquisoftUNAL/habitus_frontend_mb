@@ -47,7 +47,7 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
                 }}
                     style={styles.item}
                 >
-                    <Text style={styles.itemText}>Your Habits</Text>
+                    <Text style={styles.itemText}>🕰️ Your Habits</Text>
                 </Pressable>
 
                 <Pressable onPress={() => {
@@ -55,7 +55,7 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
                 }}
                     style={styles.item}
                 >
-                    <Text style={styles.itemText}>Calendar</Text>
+                    <Text style={styles.itemText}>📅 Calendar</Text>
                 </Pressable>
 
                 <Pressable onPress={() => {
@@ -63,7 +63,7 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
                 }}
                     style={styles.item}
                 >
-                    <Text style={styles.itemText}>Achievements</Text>
+                    <Text style={styles.itemText}>🆗 Achievements</Text>
                 </Pressable>
 
                 <Pressable onPress={() => {
@@ -71,7 +71,7 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
                 }}
                     style={styles.item}
                 >
-                    <Text style={styles.itemText}>Statistics</Text>
+                    <Text style={styles.itemText}>📢 Statistics</Text>
                 </Pressable>
 
                 <Pressable onPress={() => {
@@ -79,7 +79,7 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
                 }}
                     style={styles.item}
                 >
-                    <Text style={styles.itemText}>Notifications</Text>
+                    <Text style={styles.itemText}>🔔 Notifications</Text>
                 </Pressable>
 
                 <Pressable onPress={() => {
@@ -87,7 +87,7 @@ const DrawerContent = ({ props, styles, user, theme, toggleTheme }: DrawerConten
                 }}
                     style={styles.item}
                 >
-                    <Text style={styles.itemText}>My Account</Text>
+                    <Text style={styles.itemText}>🖐🏻 My Account</Text>
                 </Pressable>
 
             </DrawerContentScrollView >
