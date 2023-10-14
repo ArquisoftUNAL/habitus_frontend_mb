@@ -18,6 +18,10 @@ export const createStyles = (theme: Theme) => {
             paddingVertical: theme.spacing.small,
             marginHorizontal: theme.spacing.small,
             marginVertical: theme.spacing.small,
+        },
+        textCustomVerticalSpace: {
+            marginTop: theme.spacing.smallMedium,
+            marginBottom: 0,
         }
     });
     return styles;

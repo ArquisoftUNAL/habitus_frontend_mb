@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Pressable, Text, View, Image } from 'react-native';
 import { useTheme } from '../themes/Theme.context';
 import { DrawerContentScrollView, DrawerItem, DrawerItemList, createDrawerNavigator } from '@react-navigation/drawer';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 
 import graphql from '../graphql';
 import { CalendarView } from './Calendar.view';
@@ -17,7 +17,6 @@ import { removeAuthToken } from '../storage/authToken';
 import { LoadingView } from './LoadingView';
 import { StatisticsView } from './Statistics.view';
 import { UpdateUserView } from './UpdateUserdata.view';
-import { CreateUpdateHabitView } from './CreateUpdateHabit.view';
 
 const Drawer = createDrawerNavigator();
 
@@ -135,15 +134,12 @@ export const MainView = React.memo<MainProps>(({ navigation }) => {
     const { theme, toggleTheme } = useTheme();
     const styles = createStyles(theme);
 
-    useEffect(() => {
-        fetchUserData();
-    }, []);
-
-    const [fetchUserData, { loading, error, data }] = useLazyQuery(graphql.GET_USER);
+    const { loading, error, data } = useQuery(graphql.GET_USER);
 
     if (error) {
         // Redirect to login
         navigation.navigate('Login');
+        return <></>;
     }
 
     if (loading || !data) {
@@ -159,7 +155,7 @@ export const MainView = React.memo<MainProps>(({ navigation }) => {
                 drawerPosition: 'left',
                 headerShown: true,
             }}
-            initialRouteName='Calendar'
+            initialRouteName='Habits'
             backBehavior='history'
             defaultStatus='closed'
             drawerContent={(props) => <DrawerContent
@@ -212,10 +208,12 @@ export const MainView = React.memo<MainProps>(({ navigation }) => {
             <Drawer.Screen
                 name="My Account"
                 component={UpdateUserView}
+
                 options={{
                     drawerLabel: 'My account',
                     title: "My account"
                 }}
+
             />
         </Drawer.Navigator>
     );

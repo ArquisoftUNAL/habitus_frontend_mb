@@ -1,0 +1,6 @@
+1- Fix minor bug regarding habits not being updated after an update happens
+1.5 - Finish habits page (add beautier things there) and test everything, this is critical
+2- Finish statistics page (depends on ms completed)
+3- Finish achievements page (add beautier things there)
+4- Check performance issues
+5- Add habit selection in calendar view

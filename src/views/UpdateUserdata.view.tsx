@@ -13,12 +13,9 @@ import { Separator } from '../components/Separator';
 import { CustomButton } from '../components/Button';
 import { LoadingView } from './LoadingView';
 import { GraphQLError } from '../components/GraphQLError';
+import { SucessMessage } from '../components/SucessMessage';
 
-interface UpdateUserProps {
-    navigation: any;
-};
-
-export const UpdateUserView: React.FC<UpdateUserProps> = ({ navigation }) => {
+export const UpdateUserView: React.FC = ({ navigation, fetchUserData }: any) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -56,6 +53,7 @@ export const UpdateUserView: React.FC<UpdateUserProps> = ({ navigation }) => {
     }
 
     if (error) {
+        console.log(JSON.stringify(error));
         return <GraphQLError error={error} />
     }
 
@@ -73,6 +71,12 @@ export const UpdateUserView: React.FC<UpdateUserProps> = ({ navigation }) => {
                 {
                     error && (
                         <GraphQLError error={error} />
+                    )
+                }
+
+                {
+                    data && (
+                        <SucessMessage message="Your data was updated!" />
                     )
                 }
 

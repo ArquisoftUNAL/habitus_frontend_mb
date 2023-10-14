@@ -50,7 +50,7 @@ const frequences = [
 
 export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClose, type, data }) => {
 
-
+    console.log(data);
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
@@ -60,9 +60,28 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
     const [isYn, setIsYn] = React.useState<boolean>(type === 'create' ? false : data.hab_is_yn);
     const [units, setUnits] = React.useState<string>(type === 'create' ? '' : data.hab_units);
     const [frequency, setFrequency] = React.useState<any>(
-        type === 'create' ? frequences[0] : frequences.find((freq) => freq.value === data.hab_frequency_type)
+        type === 'create' ? frequences[0] : frequences.find(
+            (freq) => freq.value === data.hab_freq_type
+        ) ?? frequences[0]
     );
-    const [color, setColor] = React.useState<string>(type === 'create' ? '#000000' : data.hab_color);
+
+    console.log(frequency);
+
+    let given_color = "000000";
+
+    if (type === 'edit') {
+        const regex = /([0-9A-F]{6})/i;
+
+        const matches = regex.exec(data.hab_color);
+
+        given_color = theme.colors.primary.slice(1);
+
+        if (matches) {
+            given_color = matches[0];
+        }
+    }
+
+    const [color, setColor] = React.useState<string>(given_color);
     const [isFavorite, setIsFavorite] = React.useState<boolean>(type === 'create' ? false : data.hab_is_favorite);
 
     const { loading: loadingCategories, error: errorsCategories, data: dataCategories } = useQuery(graphql.GET_CATEGORIES);
@@ -80,16 +99,20 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
     }
 
     const [category, setCategory] = React.useState<any>(
-        type === 'create' ? categories.length === 0 ? {} : categories[0] : categories.find(
-            (cat: any) => cat.value === data.hab_category_id
-        )
+        type === 'create' ? (categories.length === 0 ? {} : categories[0]) : (categories?.find(
+            (cat: any) => cat.value === data.cat_id
+        ) ?? categories[0])
     );
 
-    const [performMutation, { loading: loadingMutation, error: errorMutation, data: dataMutation }] = type == 'create' ?
-        useMutation(graphql.ADD_HABIT) :
-        useMutation(graphql.UPDATE_HABIT);
+    console.log(category);
+    const [performCreateMutation, {
+        loading: loadingCreateMutation, error: errorCreateMutation, data: dataCreateMutation
+    }] = useMutation(graphql.ADD_HABIT);
+    const [performUpdateMutation, {
+        loading: loadingUpdateMutation, error: errorUpdateMutation, data: dataUpdateMutation
+    }] = useMutation(graphql.UPDATE_HABIT);
 
-    if (dataMutation) {
+    if (dataCreateMutation || dataUpdateMutation) {
         onClose();
     }
 
@@ -97,9 +120,15 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
         return <GraphQLError error={errorsCategories} />
     }
 
-    if (loadingMutation || loadingCategories) {
+    if (loadingCreateMutation || loadingCategories || loadingUpdateMutation) {
         return <LoadingView />
     }
+
+    if (errorCreateMutation)
+        console.log(JSON.stringify(errorCreateMutation));
+
+    if (errorUpdateMutation)
+        console.log(JSON.stringify(errorUpdateMutation));
 
     return (
         <ScrollView>
@@ -113,8 +142,14 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                 } />
 
                 {
-                    errorMutation && (
-                        <GraphQLError error={errorMutation} />
+                    errorCreateMutation && (
+                        <GraphQLError error={errorCreateMutation} />
+                    )
+                }
+
+                {
+                    errorUpdateMutation && (
+                        <GraphQLError error={errorUpdateMutation} />
                     )
                 }
 
@@ -161,7 +196,7 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                         <Spacing size={20} />
                         <Label title="Now please define a goal to accomplish per period" />
                         <TextFieldInput title="Goal" onChange={
-                            (value: string) => setGoal(parseFloat(value))
+                            (value: string) => setGoal(parseFloat(value) || 0)
                         } value={goal.toString()} />
 
                         <Spacing size={20} />
@@ -192,8 +227,10 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                     thumbAnimationDuration={1}
                     sliderThickness={20}
                     thumbSize={20} onChange={(color) => {
-                        setColor(color.hex);
-                    }} boundedThumb>
+                        setColor(color.hex.slice(1));
+                    }} boundedThumb
+                    value={"#" + color}
+                >
 
                     <HueCircular thumbShape='pill' style={styles.colorPickerCircleContainer}>
                         <Panel1 style={styles.colorPickerBoxContainer} />
@@ -201,9 +238,9 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                     <View>
                         <Text style={[
                             styles.colorText,
-                            { color: color }
+                            { color: "#" + color }
                         ]}>
-                            {color}
+                            {"#" + color}
                         </Text>
                     </View>
                 </ColorPicker>
@@ -211,14 +248,21 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                 <Spacing size={10} />
                 <Separator />
                 <CustomButton title="Save" type="primary" action={() => {
-                    performMutation(
-                        {
-                            variables: {
-                                name, description, is_favorite: isFavorite, is_yn: isYn, color,
-                                goal, units, frequency_type: frequency.value, category: category.value
-                            }
+                    const mutation_data = {
+                        variables: {
+                            name, description, is_favorite: isFavorite, is_yn: isYn, color: color,
+                            goal, units, frequency_type: frequency.value, category: category.value
                         }
-                    )
+                    };
+
+                    console.log(mutation_data);
+
+                    type === 'create' ? performCreateMutation(mutation_data) : performUpdateMutation({
+                        variables: {
+                            id: data.hab_id,
+                            ...mutation_data.variables
+                        }
+                    });
                 }} />
 
                 <Spacing size={20} />

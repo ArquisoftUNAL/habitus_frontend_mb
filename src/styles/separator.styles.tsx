@@ -18,7 +18,23 @@ export const createStyles = (theme: Theme) => {
             width: '100%',
             height: 1,
             paddingVertical: theme.spacing.medium,
-        }
+        },
+        smallSeparatorContainer: {
+            alignItems: 'center',
+            width: '100%',
+            height: 1,
+            paddingVertical: theme.spacing.small,
+        },
+        smallSeparator: {
+            backgroundColor: theme.colors.primary,
+            color: theme.colors.background,
+            tintColor: theme.colors.primary,
+            width: '60%',
+            height: '100%',
+            borderWidth: 1,
+            borderColor: theme.colors.primary,
+            padding: 0
+        },
     });
     return styles;
 };

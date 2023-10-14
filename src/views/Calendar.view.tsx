@@ -1,6 +1,6 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import PieChart from 'react-native-pie-chart';
 
 import { createStyles as calendarStylesBuilder } from '../styles/calendar.view.styles';
@@ -10,6 +10,8 @@ import graphql from './../graphql';
 import { useTheme } from '../themes/Theme.context';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Spacing } from '../components/Spacing';
+import { ComboBoxInput } from '../components/inputs';
+import { GraphQLError } from '../components/GraphQLError';
 
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -189,7 +191,7 @@ export const CalendarView = React.memo(() => {
 
     const [period, setPeriod] = React.useState('month');
     const [selectedDayData, setSelectedDayData] = React.useState<CalendarDay | null>(null);
-
+    const [habit, setHabit] = React.useState<any>(null);
 
     const { theme } = useTheme();
     const styles = {
@@ -214,39 +216,92 @@ export const CalendarView = React.memo(() => {
             break;
     }
 
+    console.log(habit)
+
     const [dates, setDates] = React.useState([start_date, end_date]);
 
-    const { data, error, loading } = useQuery(
-        graphql.CALENDAR_RESUMED_DATA,
-        {
+    const { loading: habitsLoading, error: habitsError, data: habitsData } = useQuery(graphql.USER_HABITS);
+
+    const [queryByUser, { data: queryByUserData, error: queryByUserError, loading: queryByUserLoading }] = useLazyQuery(
+        graphql.CALENDAR_RESUMED_DATA
+    )
+
+    useEffect(() => {
+        // Always first query to perform
+        queryByUser({
             variables: {
                 start_date: dates[0].toISOString().split('T')[0],
                 end_date: dates[1].toISOString().split('T')[0]
             }
-        }
-    )
+        });
+    }, []);
 
-    if (error) return (<Text>
-        {error.message}
-        {error.graphQLErrors.map(({ message }, i) => (
-            message + "\n"
-        ))}
-        Error! {error.clientErrors.join(' ')}
-    </Text>);
-
-    if (loading) return (
-        <LoadingView />
+    const [queryByHabit, { data: queryByHabitData, error: queryByHabitError, loading: queryByHabitLoading }] = useLazyQuery(
+        graphql.CALENDAR_HABIT_RESUME_DATA
     );
 
-    const { calendarEventsByUser: calendarData } = data;
+    if (habitsLoading) return <LoadingView />;
+
+    if (habitsError) return <GraphQLError error={habitsError} />;
+
+    let habits = [];
+
+    if (habitsData?.habitsByUser) {
+        // Build habits array
+        habits = habitsData.habitsByUser.map((habit: any) => ({
+            label: habit.hab_name,
+            value: habit.hab_id,
+        }));
+    }
+
+    habits.push({
+        label: "All",
+        value: "all"
+    })
+
+    if (queryByUserLoading) return <LoadingView />;
+    if (queryByUserError) return <GraphQLError error={queryByUserError} />;
+    if (queryByHabitLoading) return <LoadingView />;
+    if (queryByHabitError) return <GraphQLError error={queryByHabitError} />;
+
+    console.log("Data", JSON.stringify(queryByUserData)
+        + "\n" + JSON.stringify(queryByHabitData));
+
+    const calendarData = habit ? queryByHabitData?.calendarEventsByHabit : queryByUserData?.calendarEventsByUser;
+    console.log("chosen", calendarData);
 
     return (
         <View style={styles.container}>
             <Text style={styles.mediumText}>
                 {period == 'month' ? 'Monthly' : 'Weekly'} Calendar
             </Text>
+            <ComboBoxInput
+                items={habits}
+                onChange={(item: any) => {
+                    if (item.value == "all") {
+                        console.log("all")
+                        setHabit(null);
+                        queryByUser({
+                            variables: {
+                                start_date: dates[0].toISOString().split('T')[0],
+                                end_date: dates[1].toISOString().split('T')[0]
+                            }
+                        });
+                    } else {
+                        console.log("not all", item)
+                        setHabit(item);
+                        queryByHabit({
+                            variables: {
+                                start_date: dates[0].toISOString().split('T')[0],
+                                end_date: dates[1].toISOString().split('T')[0],
+                                hab_id: habit.value
+                            }
+                        });
+                    }
+                }}
+                value={habit}
+            />
             <ScrollView>
-
                 <View style={styles.buttonsRow}>
                     <Pressable
                         style={styles.navigatorButton}

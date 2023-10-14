@@ -15,3 +15,15 @@ export const Separator: React.FC = () => {
         </View>
     );
 };
+
+export const SmallSeparator: React.FC = () => {
+
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
+
+    return (
+        <View style={styles.smallSeparatorContainer}>
+            <View style={styles.smallSeparator} />
+        </View>
+    );
+}

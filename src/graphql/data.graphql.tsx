@@ -13,8 +13,10 @@ const ADD_HABIT_DATA = gql`
                 collected_at: $collected_at
             }
         ) {
-            habit_id
-            collected_at
+            hab_id
+            hab_dat_id
+            hab_dat_amount
+            hab_dat_collected_at
         }
     }
 `;

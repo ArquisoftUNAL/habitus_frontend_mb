@@ -4,6 +4,7 @@ import { Theme } from '../themes/Theme.interface';
 export const createStyles = (theme: Theme) => {
     const styles = StyleSheet.create({
         smallTextInput: {
+            width: '100%',
             backgroundColor: theme.colors.background,
             color: theme.colors.primary,
             fontSize: theme.fontSizes.small,
@@ -98,6 +99,8 @@ export const createStyles = (theme: Theme) => {
             borderWidth: 2,
             borderColor: theme.colors.primary,
             backgroundColor: theme.colors.background,
+            width: '100%',
+            height: theme.spacing.medium,
         },
         checkBox: {
 

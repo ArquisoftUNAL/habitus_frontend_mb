@@ -66,6 +66,13 @@ export const createStyles = (theme: Theme) => {
             fontSize: theme.fontSizes.small,
             textAlign: 'center',
             padding: theme.spacing.medium,
+        },
+        sucessText: {
+            backgroundColor: "lightgreen",
+            color: "green",
+            fontSize: theme.fontSizes.small,
+            textAlign: 'center',
+            padding: theme.spacing.medium,
         }
     });
     return styles;

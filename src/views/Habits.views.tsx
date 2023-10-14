@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Text, View } from 'react-native';
+import { Modal, Pressable, Text, View } from 'react-native';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { CommonActions } from '@react-navigation/native';
 import Accordion from 'react-native-collapsible/Accordion';
@@ -17,7 +17,7 @@ import { getAuthToken, setAuthToken } from '../storage/authToken';
 import { ScrollView } from 'react-native-gesture-handler';
 import { GraphQLError } from '../components/GraphQLError';
 import { LoadingView } from './LoadingView';
-import { Separator } from '../components/Separator';
+import { Separator, SmallSeparator } from '../components/Separator';
 import { CreateUpdateHabitView } from './CreateUpdateHabit.view';
 
 interface HabitsViewProps {
@@ -41,7 +41,11 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
 
     // Expandable habits
     const [selected, setSelected] = React.useState<any[]>([]);
-    const [modalHabitState, setModalHabitState] = React.useState<boolean>(false);
+    const [modalHabitState, setModalHabitState] = React.useState<any>({
+        visible: false,
+        type: "create",
+        habit: null,
+    });
 
     const endDate = new Date();
     const startDate = (new Date(endDate)).setDate(endDate.getDate() - DAYS_OFFSET);
@@ -62,6 +66,12 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
             end_date: endDateOnly,
         }
     });
+
+    const [performHabitdataUpdate, _] = useMutation(graphql.UPDATE_HABIT_DATA);
+
+    const [createHabitdata, __] = useMutation(graphql.ADD_HABIT_DATA);
+
+    const [deleteHabitdata, ___] = useMutation(graphql.DELETE_HABIT_DATA);
 
     React.useEffect(() => {
         // Launch query always on init and on data change
@@ -97,10 +107,10 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
     const dates: string[] = [];
     const currentDate = new Date();
     for (let i = 0; i < DAYS_OFFSET; i++) {
-        currentDate.setDate(currentDate.getDate() - 1);
-
         const currentDateString = currentDate.toISOString().split('T')[0];
         dates.push(currentDateString);
+
+        currentDate.setDate(currentDate.getDate() - 1);
     }
 
     // Build sections
@@ -119,67 +129,199 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
     });
 
     // Render section title
-    const renderSectionTitle = (section: any) => {
+    const RenderSectionTitle = (section: any) => {
         // Check habit color
-        const regex = /(#[0-9A-F]{6})/i;
+        const regex = /([0-9A-F]{6})/i;
 
         const matches = regex.exec(section.habit.hab_color);
 
         let color = theme.colors.primary;
 
         if (matches) {
-            color = matches[0];
+            color = "#" + matches[0];
         }
 
         return (
             <View style={styles.accordionHeader}>
-                <View style={styles.accordionHeaderRow}>
-                    <Text style={styles.accordionHeaderText}>
-                        {section.habit.hab_name}
+                <View style={styles.accordionHeaderItem}>
+                    <View style={[
+                        styles.coloredCircle,
+                        { backgroundColor: color }
+                    ]} />
+                </View>
+                <View style={styles.accordionHeaderItem}>
+                    <Text style={[
+                        styles.accordionHeaderText
+                    ]}>
+                        {(section.habit.hab_is_favorite ? "⭐" : "") + " " + section.habit.hab_name}
                     </Text>
+                </View>
+                <View style={styles.accordionHeaderItem}>
+                    <Pressable
+                        onPress={() => {
+                            console.log(section.habit);
+                            setModalHabitState({
+                                visible: true,
+                                type: "edit",
+                                habit: section.habit,
+                            });
+                        }}
+                    >
+                        <Text style={[
+                            styles.accordionHeaderText,
+                            styles.editButton
+                        ]}>
+                            Update
+                        </Text>
+                    </Pressable>
+                </View>
+                <View style={styles.accordionHeaderItem}>
+                    <Pressable>
+                        <Text style={[
+                            styles.accordionHeaderText,
+                            styles.deleteButton
+                        ]}>
+                            Delete
+                        </Text>
+                    </Pressable>
                 </View>
             </View>
         );
     };
 
     // Render section content
-    const renderContent = (section: any) => {
+    const RenderContent = (section: any) => {
 
         return (
-            <View>
-                <ScrollView>
-                    {
-                        dates.map((date: string, index: number) => {
-                            const dataItem = section.data.find(
-                                (dataItem: any) => dataItem.hab_dat_collected_at === date
-                            )
+            <View style={styles.accordionBodyContainer}>
+                <Spacing size={10} />
+                <SmallSeparator />
+                <Spacing size={10} />
+                <Text style={[
+                    styles.smallText,
+                    styles.habitDataText
+                ]}>
+                    Category: {section.category.cat_name}
+                </Text>
+                <Text style={styles.smallText}>
+                    Description: {section.habit.hab_description}
+                </Text>
+                <View style={styles.datesContainer}>
+                    <ScrollView
+                        horizontal={true}
+                    >
+                        {
+                            dates.map((date: string, index: number) => {
+                                const dataItem = section.data.find(
+                                    (dataItem: any) => dataItem.hab_dat_collected_at === date
+                                )
 
-                            return (
-                                <View key={section.habit.hab_id + " " + date}>
-                                    <Text>
-                                        {date}
-                                    </Text>
-                                    {
-                                        section.habit.hab_is_yn ?
-                                            <SmallTextFieldInput
-                                                title="Yes/No"
-                                                masked={false}
-                                                enabled={index < ALLOWED_BACKDAYS}
-                                                onChange={() => { }}
-                                                value={dataItem ? dataItem.hab_dat_value : ""}
-                                            />
-                                            :
-                                            <CheckBoxInput
-                                                enabled={index < ALLOWED_BACKDAYS}
-                                                onChange={() => { }}
-                                                value={dataItem ? dataItem.hab_dat_value : ""}
-                                            />
-                                    }
-                                </View>
-                            )
-                        })
-                    }
-                </ScrollView>
+                                const weekDay = days[new Date(date).getDay()];
+
+                                return (
+                                    <View
+                                        key={section.habit.hab_id + " " + date}
+                                    >
+                                        <Text style={styles.dateHeader}>
+                                            {weekDay}
+                                        </Text>
+                                        <View style={styles.dateContent}>
+                                            {
+                                                section.habit.hab_is_yn ?
+                                                    <CheckBoxInput
+                                                        enabled={index < ALLOWED_BACKDAYS}
+                                                        onChange={(new_value) => {
+                                                            if (new_value && dataItem) {
+                                                                // Since this is a YN habit, we need to delete the data
+                                                                deleteHabitdata({
+                                                                    variables: {
+                                                                        datId: dataItem.hab_dat_id
+                                                                    },
+                                                                    onCompleted: (data) => {
+                                                                        section.data = section.data.filter(
+                                                                            (dataItem: any) => dataItem.hab_dat_id !== data.deleteHabitdata.hab_dat_id
+                                                                        );
+                                                                    }
+                                                                });
+                                                            } else {
+                                                                // Since this is a YN habit, we need to create the data
+                                                                createHabitdata({
+                                                                    variables: {
+                                                                        amount: 1,
+                                                                        habit_id: section.habit.hab_id,
+                                                                        collected_at: date,
+                                                                    },
+                                                                    onCompleted: (data) => {
+                                                                        section.data.push(data.addHabitdata)
+                                                                    }
+                                                                });
+                                                            }
+                                                        }}
+                                                        value={dataItem !== undefined}
+                                                    />
+                                                    :
+                                                    <SmallTextFieldInput
+                                                        title="Yes/No"
+                                                        masked={false}
+                                                        enabled={index < ALLOWED_BACKDAYS}
+                                                        onChange={(value) => {
+                                                            let amount = parseFloat(value);
+
+                                                            if (isNaN(amount)) {
+                                                                amount = 0;
+                                                            }
+
+                                                            if (amount <= 0) {
+                                                                return;
+                                                            }
+
+                                                            if (dataItem) {
+                                                                performHabitdataUpdate({
+                                                                    variables: {
+                                                                        datId: dataItem ? dataItem.hab_dat_id : "",
+                                                                        amount: amount,
+                                                                        habit_id: section.habit.hab_id,
+                                                                        collected_at: date,
+                                                                    },
+                                                                    onCompleted: (data) => {
+                                                                        if (data.updateHabitdata) {
+                                                                            section.data = section.data.map(
+                                                                                (dataItem: any) => {
+                                                                                    if (dataItem.hab_dat_id === data.updateHabitdata.hab_dat_id) {
+                                                                                        return data.updateHabitdata;
+                                                                                    }
+
+                                                                                    return dataItem;
+                                                                                }
+                                                                            );
+                                                                        } else {
+                                                                            section.data.push(data.addHabitdata)
+                                                                        }
+                                                                    }
+                                                                });
+                                                            } else {
+                                                                createHabitdata({
+                                                                    variables: {
+                                                                        amount: amount,
+                                                                        habit_id: section.habit.hab_id,
+                                                                        collected_at: date,
+                                                                    },
+                                                                    onCompleted: (data) => {
+                                                                        section.data.push(data.addHabitdata)
+                                                                    }
+                                                                });
+                                                            }
+                                                        }}
+                                                        value={dataItem ? dataItem.hab_dat_amount : ""}
+                                                    />
+                                            }
+                                        </View>
+                                    </View>
+                                )
+                            })
+                        }
+                    </ScrollView>
+                </View>
             </View>
         );
     };
@@ -191,72 +333,67 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
 
     return (
         <View style={styles.fullPage}>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalHabitState}
-                onRequestClose={() => {
-                    setModalHabitState(false);
-                }}
-            >
-                <CreateUpdateHabitView
-                    type="create"
-                    onClose={() => {
-                        setModalHabitState(false);
+            <ScrollView>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalHabitState.visible}
+                    onRequestClose={() => {
+                        setModalHabitState({
+                            ...modalHabitState,
+                            visible: false,
+                        });
+                        launchHabitsQuery();
+                    }}
+                >
+                    <CreateUpdateHabitView
+                        type={modalHabitState.type}
+                        onClose={() => {
+                            setModalHabitState({
+                                ...modalHabitState,
+                                visible: false,
+                            });
+                        }}
+                        data={modalHabitState.habit}
+                    />
+                </Modal>
+
+                <Text style={styles.largeText}>
+                    Habits
+                </Text>
+
+                <Spacing size={20} />
+
+                <CustomButton
+                    title="Add habit"
+                    type="secondary"
+                    action={() => {
+                        setModalHabitState({
+                            visible: true,
+                            type: "create",
+                            habit: null,
+                        });
                     }}
                 />
-            </Modal>
 
-            <Text style={styles.largeText}>
-                Habits
-            </Text>
+                <Separator />
 
-            <Spacing size={20} />
+                <Accordion
+                    sections={sections}
+                    activeSections={selected}
+                    renderSectionTitle={() => (<></>)}
+                    renderHeader={RenderSectionTitle}
+                    renderContent={RenderContent}
+                    containerStyle={styles.accordionContainer}
+                    sectionContainerStyle={styles.accordionSectionContainer}
+                    onChange={updateSections}
+                    underlayColor={"transparent"}
+                    align="center"
+                    expandMultiple={true}
+                    duration={0}
+                />
 
-            <CustomButton
-                title="Add habit"
-                type="secondary"
-                action={() => {
-                    setModalHabitState(true);
-                }}
-            />
-
-            <Spacing size={20} />
-
-            <View>
-                <ScrollView
-                    contentContainerStyle={styles.accordionSuperContainer}
-                >
-                    {/* <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator />
-                    <Separator /> */}
-                    <Accordion
-                        sections={sections}
-                        activeSections={selected}
-                        renderSectionTitle={() => (<></>)}
-                        renderHeader={renderSectionTitle}
-                        renderContent={renderContent}
-                        containerStyle={styles.accordionContainer}
-                        sectionContainerStyle={styles.accordionSectionContainer}
-                        onChange={updateSections}
-                        underlayColor={"transparent"}
-                        align="center"
-                        duration={100}
-                        expandMultiple={true}
-                    />
-
-                </ScrollView >
-            </View>
+            </ScrollView >
         </View >
     );
 })

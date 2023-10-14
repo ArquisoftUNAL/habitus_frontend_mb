@@ -49,6 +49,8 @@ export const StatisticsView = React.memo(() => {
 
     if (habitsError) return <GraphQLError error={habitsError} />;
 
+    console.log("Data", JSON.stringify(statisticsData));
+
     return (
         <View style={styles.fullPage}>
             <Text style={styles.largeText}>

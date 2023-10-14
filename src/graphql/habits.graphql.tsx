@@ -5,8 +5,10 @@ const USER_HABITS = gql`
         habitsByUser {
             hab_id
             hab_name
+            hab_goal
             hab_is_yn
             hab_description
+            hab_units
         }
     }
 `;
@@ -30,8 +32,11 @@ const USER_HABITS_FULL_DATA = gql`
             cat_id
             hab_name
             hab_description
+            hab_goal
+            hab_is_favorite
             hab_is_yn
             hab_color
+            hab_units
         }
 
         habitdataByUser(
@@ -72,6 +77,7 @@ const ADD_HABIT = gql`
             habit: {
                 name: $name
                 description: $description
+                is_favorite: $is_favorite
                 is_yn: $is_yn
                 color: $color
                 goal: $goal
@@ -79,7 +85,9 @@ const ADD_HABIT = gql`
                 frequency_type: $frequency_type
                 category: $category
             }
-        )
+        ) {
+            id
+        }
     }
 `;
 
@@ -96,10 +104,12 @@ const UPDATE_HABIT = gql`
         $frequency_type: String
         $category: String
     ) {
-        addHabit (
+        updateHabit (
+            id: $id
             habit: {
                 name: $name
                 description: $description
+                is_favorite: $is_favorite
                 is_yn: $is_yn
                 color: $color
                 goal: $goal
@@ -107,8 +117,22 @@ const UPDATE_HABIT = gql`
                 frequency_type: $frequency_type
                 category: $category
             }
-        )
+        ) {
+            message
+        }
     }
 `;
 
-export default { USER_HABITS, ADD_HABIT, UPDATE_HABIT, USER_HABITS_FULL_DATA };
+const DELETE_HABIT = gql`
+    mutation DeleteHabit (
+        $id: String!
+    ) {
+        deleteHabit (
+            id: $id
+        ) {
+            message
+        }
+    }
+`;
+
+export default { USER_HABITS, ADD_HABIT, UPDATE_HABIT, DELETE_HABIT, USER_HABITS_FULL_DATA };

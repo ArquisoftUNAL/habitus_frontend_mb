@@ -44,21 +44,21 @@ export const NotificationsView = React.memo(() => {
                     const date = new Date(notification.noti_init_date);
                     return (
                         <View key={"t_" + index} style={styles.notificationContainer}>
-                            <Text key={"ti_" + index} style={styles.mediumText}>
+                            <Text style={[styles.mediumText, styles.textCustomVerticalSpace]}>
                                 {notification.noti_title}
                             </Text>
-                            <View key={"r1_" + index} style={styles.rowContainer}>
-                                <Text key={"bo_" + index} style={styles.smallText}>
-                                    {notification.noti_body} {"\n"}
+                            <View style={styles.rowContainer}>
+                                <Text style={[styles.smallText, styles.textCustomVerticalSpace]}>
+                                    {notification.noti_body}
                                 </Text>
                                 {notification.noti_should_email && (
-                                    <Text key={"se_" + index} style={styles.smallText}>
-                                        ✉️
+                                    <Text style={styles.smallText}>
+                                        {"\t✉️"}
                                     </Text>
                                 )}
                             </View>
-                            <Text key={"sa_" + index} style={styles.smallText}>
-                                {"⌚ Sent at: " + date.toISOString()}
+                            <Text style={[styles.smallText, styles.textCustomVerticalSpace]}>
+                                {"⌚ Sent at: " + date.toLocaleDateString() + " " + date.toLocaleTimeString()}
                             </Text>
                         </View>
                     )
