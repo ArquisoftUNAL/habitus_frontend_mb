@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
-import { useQuery, useLazyQuery } from '@apollo/client';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import Accordion from 'react-native-collapsible/Accordion';
+import { useToast } from "react-native-toast-notifications";
 
 import { createStyles as achievementsStylesBuilder } from '../styles/achievements.view.styles';
 import { createStyles as textStylesBuilder } from '../styles/texts.styles';
@@ -13,8 +14,11 @@ import { CustomButton } from './../components/Button';
 import { Label } from '../components/texts';
 import { TextFieldInput } from '../components/inputs';
 import { GraphQLError } from '../components/GraphQLError';
+import { Separator } from '../components/Separator';
+import { Spacing } from '../components/Spacing';
 
 const CollapsableHabitsContainer = memo(({ habits, chosenHabit, onHabitChange }: any) => {
+
     const [selected, setSelected] = React.useState<any[]>([]);
     const { theme } = useTheme();
 
@@ -30,7 +34,9 @@ const CollapsableHabitsContainer = memo(({ habits, chosenHabit, onHabitChange }:
         return (
             <View>
                 <Text style={styles.smallText}>
-                    {(selected.length !== 0 && chosenHabit.hab_name) ? "Chosen habit: " + chosenHabit.hab_name : "Choose an habit"}
+                    {(chosenHabit?.hab_name) ?
+                        "Chosen habit: " + chosenHabit.hab_name : "Choose an habit"
+                    }
                 </Text>
             </View>
         );
@@ -43,20 +49,23 @@ const CollapsableHabitsContainer = memo(({ habits, chosenHabit, onHabitChange }:
     const renderContent = () => {
         return (
             <View>
+                <Separator />
                 <ScrollView>
                     {
-                        habits.map((habit: any) => (
-                            <Pressable
-                                key={habit.hab_id}
-                                onPress={() => {
-                                    onHabitChange(habit);
-                                }}
-                            >
-                                <Text style={styles.smallText}>
-                                    {habit.hab_name}
-                                </Text>
-                            </Pressable>
-                        ))
+                        habits.map((habit: any) => {
+                            return (
+                                <Pressable
+                                    key={habit.hab_id}
+                                    onPress={() => {
+                                        onHabitChange(habit);
+                                    }}
+                                >
+                                    <Text style={styles.habitText}>
+                                        {habit.hab_name}
+                                    </Text>
+                                </Pressable>
+                            )
+                        })
                     }
                 </ScrollView>
             </View >
@@ -80,8 +89,15 @@ const CollapsableHabitsContainer = memo(({ habits, chosenHabit, onHabitChange }:
     );
 });
 
-const AddAchievementContainer = memo(() => {
+interface AddAchievementContainerProps {
+    addAchievementMutation: any;
+    habit: any;
+    onCreation: () => void;
+}
+
+const AddAchievementContainer = memo<AddAchievementContainerProps>(({ addAchievementMutation, habit, onCreation }) => {
     const { theme } = useTheme();
+    const toast = useToast();
 
     const [modalVisible, setModalVisible] = React.useState(false);
     const [achievementName, setAchievementName] = React.useState("");
@@ -99,26 +115,67 @@ const AddAchievementContainer = memo(() => {
                 visible={modalVisible}
                 onRequestClose={() => setModalVisible(false)}
             >
+
                 <View style={styles.addAchievementContainer}>
+
                     <View style={styles.modalView}>
-                        <Text style={styles.mediumText}>
-                            Register an achievement for this habit!
-                        </Text>
-                        <Label title="Set a name for your habit!" />
-                        <TextFieldInput title="Password" masked={true} onChange={
-                            (value: string) => setAchievementName(value)
-                        } />
-                        <CustomButton
-                            title="Close"
-                            action={() => setModalVisible(false)}
-                            type="primary"
-                        />
+                        <ScrollView>
+                            <Text style={styles.mediumText}>
+                                Register an achievement for this habit!
+                            </Text>
+                            <Text style={styles.smallText}>
+                                Set a cool achievement name
+                            </Text>
+                            <TextFieldInput title="Achievement name" masked={false} onChange={
+                                (value: string) => setAchievementName(value)
+                            } value={achievementName} />
+                            <Separator />
+                            <CustomButton
+                                title="Let's go!"
+                                action={() => {
+                                    addAchievementMutation(
+                                        {
+                                            variables: {
+                                                name: achievementName,
+                                                habit_id: habit.hab_id
+                                            },
+                                            onCompleted: (data: any) => {
+                                                setModalVisible(false);
+                                                toast.show(
+                                                    "Achievement created!",
+                                                    { type: "success" }
+                                                );
+                                                onCreation();
+                                            },
+                                            onError: (error: any) => {
+                                                setModalVisible(false);
+                                                toast.show(
+                                                    "Error creating achievement",
+                                                    { type: "danger" }
+                                                );
+                                            }
+                                        }
+                                    );
+                                }}
+                                type="primary"
+
+                            />
+                            <Spacing size={10} />
+                            <CustomButton
+                                title="Close"
+                                action={() => setModalVisible(false)}
+                                type="secondary"
+
+                            />
+                        </ScrollView>
                     </View>
+
                 </View >
 
+
             </Modal >
-            <Text style={styles.mediumText}>
-                Seems like you haven't create an achievement tracker for this habit yet
+            <Text style={styles.smallText}>
+                Seems like you haven't created an achievement tracker for this habit yet
             </Text>
             <CustomButton
                 title="Create achievement tracker"
@@ -126,18 +183,21 @@ const AddAchievementContainer = memo(() => {
                     setModalVisible(true);
                 }}
                 type="primary"
+                fontSize={theme.fontSizes.small}
             />
         </View >
     );
 });
 
-export const AchievementsView = React.memo(() => {
+export const AchievementsView: React.FC = () => {
     const [habit, setHabit] = React.useState<any>({ hab_id: "" });
     const [achievement, setAchievement] = React.useState<any>({ ach_id: "" });
     const [milestones, setMilestones] = React.useState<any[]>([]);
 
     const { theme } = useTheme();
-    const styles = {
+    const toast = useToast();
+
+    const styles: any = {
         ...achievementsStylesBuilder(theme),
         ...textStylesBuilder(theme)
     };
@@ -155,9 +215,69 @@ export const AchievementsView = React.memo(() => {
         graphql.ACHIEVEMENT_MILESTONES
     );
 
-    if (habitError) return (
-        <GraphQLError error={habitError} />
+    // Create achievements
+    const [addAchievement, _] = useMutation(
+        graphql.ADD_ACHIEVEMENT
     );
+
+    const updateAchievements = () => {
+        if (habit.hab_id === "") return;
+        fetchAchievements(
+            {
+                variables: { id: habit.hab_id },
+                onCompleted: (data: any) => {
+                    const achievement = data.achievementsByHabit.data[0];
+                    if (achievement) {
+                        setAchievement(achievement);
+                        fetchMilestones(
+                            {
+                                variables: { id: achievement.id },
+                                onCompleted: (data: any) => {
+                                    const milestones = data.milestonesByAchievement.data;
+                                    if (milestones) {
+                                        setMilestones(milestones);
+                                    } else {
+                                        setMilestones([]);
+                                    }
+                                },
+                                onError: (error: any) => {
+                                    console.log(JSON.stringify(error));
+                                    toast.show(
+                                        "Error fetching milestones",
+                                        { type: "danger" }
+                                    );
+                                    setMilestones([]);
+                                }
+                            }
+                        );
+                    } else {
+                        setAchievement({ ach_id: "" });
+                        setMilestones([]);
+                    }
+                },
+                onError: (error: any) => {
+                    console.log(JSON.stringify(error));
+                    toast.show(
+                        "Error fetching milestones",
+                        { type: "danger" }
+                    );
+                    setAchievement({ ach_id: "" });
+                    setMilestones([]);
+                }
+            }
+        );
+    }
+
+    useEffect(() => {
+        updateAchievements();
+    }, [habit]);
+
+    if (habitError) {
+        console.log(JSON.stringify(habitError));
+        return (
+            <GraphQLError error={habitError} />
+        )
+    };
 
     if (habitLoading) return (
         <LoadingView />
@@ -167,20 +287,6 @@ export const AchievementsView = React.memo(() => {
     const AchievementComponent = () => {
         if (achievementLoading) return (
             <LoadingView />
-        );
-
-        if (achievementData) return (
-            <View style={styles.achievementsContainer}>
-                <Text style={styles.mediumText}>
-                    {achievement.ach_name}
-                </Text>
-                <Text style={styles.mediumText}>
-                    Current streak: {achievement.currentStreak}
-                </Text>
-                <Text style={styles.mediumText}>
-                    Max streak: {achievement.maxStreak}
-                </Text>
-            </View>
         );
 
         if (achievementError) {
@@ -195,8 +301,45 @@ export const AchievementsView = React.memo(() => {
             </View>
         );
 
+        if (achievementData) {
+            const foundAchievement = achievementData.achievementsByHabit.data[0];
+
+            if (!foundAchievement) return (
+                <AddAchievementContainer
+                    addAchievementMutation={addAchievement}
+                    habit={habit}
+                    onCreation={() => {
+                        updateAchievements();
+                    }}
+                />
+            );
+
+            return (
+                <View style={styles.achievementsContainer}>
+                    <Text style={styles.mediumText}>
+                        Achievement
+                    </Text>
+                    <Text style={styles.smallText}>
+                        Name: {achievement.name}
+                    </Text>
+                    <Text style={styles.smallText}>
+                        Current streak: {achievement.currentStreak}
+                    </Text>
+                    <Text style={styles.smallText}>
+                        Max streak: {achievement.highestStreak}
+                    </Text>
+                </View>
+            );
+        }
+
         return (
-            <AddAchievementContainer />
+            <AddAchievementContainer
+                addAchievementMutation={addAchievement}
+                habit={habit}
+                onCreation={() => {
+                    updateAchievements();
+                }}
+            />
         );
 
     }
@@ -214,24 +357,32 @@ export const AchievementsView = React.memo(() => {
                 </Text>
                 <ScrollView>
                     {
-                        milestones.map((milestone: any) => (
-                            <View key={milestone.date}>
-                                <Text style={styles.mediumText}>
-                                    {milestone.date}
-                                </Text>
-                                <Text style={styles.mediumText}>
-                                    {milestone.streak}
-                                </Text>
-                            </View>
-                        ))
+                        milestones.length > 0 ?
+                            milestones.map((milestone: any) => (
+                                <View key={milestone.id}>
+                                    <Text style={styles.smallText}>
+                                        Date: {milestone.date}
+                                    </Text>
+                                    <Text style={styles.smallText}>
+                                        Streak achieved: {milestone.streak}
+                                    </Text>
+                                </View>
+                            ))
+                            :
+                            <Text style={styles.smallText}>
+                                No milestones yet
+                            </Text>
                     }
                 </ScrollView>
             </View>
         );
 
-        if (milestonesError) return (
-            <GraphQLError error={milestonesError} />
-        );
+        if (milestonesError) {
+            console.log(JSON.stringify(milestonesError));
+            return (
+                <GraphQLError error={milestonesError} />
+            );
+        }
 
         if (achievement.ach_id === "") return (
             <View style={styles.milestonesContainer}>
@@ -244,37 +395,18 @@ export const AchievementsView = React.memo(() => {
 
     return (
         <View style={styles.mainContainer}>
+
+            <Text style={styles.largeText} numberOfLines={3}>
+                Achievements and Milestones
+            </Text>
+
             <ScrollView>
-                <Text style={styles.largeText} numberOfLines={3}>
-                    Achievements and Milestones
-                </Text>
                 <CollapsableHabitsContainer
                     habits={habitData.habitsByUser}
                     chosenHabit={habit}
                     onHabitChange={(habit: any) => {
+                        console.log("Habit", habit)
                         setHabit(habit);
-                        fetchAchievements(
-                            {
-                                variables: { id: habit.hab_id },
-                                onCompleted: (data: any) => {
-                                    const achievement = data.achievementsByHabit.data[0];
-                                    if (achievement) {
-                                        setAchievement(achievement);
-                                        fetchMilestones(
-                                            {
-                                                variables: { id: achievement.ach_id },
-                                                onCompleted: (data: any) => {
-                                                    const milestones = data.milestonesByAchievement.data;
-                                                    if (milestones) {
-                                                        setMilestones(milestones);
-                                                    }
-                                                }
-                                            }
-                                        );
-                                    }
-                                }
-                            }
-                        );
                     }}
                 />
                 <AchievementComponent />
@@ -282,4 +414,4 @@ export const AchievementsView = React.memo(() => {
             </ScrollView>
         </View >
     );
-});
+};

@@ -8,9 +8,10 @@ interface ButtonProps {
     title: string;
     type: string;
     action: () => void;
+    fontSize?: number;
 }
 
-export const CustomButton: React.FC<ButtonProps> = ({ title, type, action }) => {
+export const CustomButton: React.FC<ButtonProps> = ({ title, type, action, fontSize }) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -26,7 +27,9 @@ export const CustomButton: React.FC<ButtonProps> = ({ title, type, action }) => 
                 style={buttonStyle}
                 onPress={action}
             >
-                <Text style={textStyle}>
+                <Text style={[textStyle, {
+                    fontSize: fontSize ?? textStyle.fontSize,
+                }]}>
                     {title}
                 </Text>
             </Pressable>

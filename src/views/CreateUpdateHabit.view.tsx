@@ -50,7 +50,6 @@ const frequences = [
 
 export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClose, type, data }) => {
 
-    console.log(data);
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
@@ -158,7 +157,7 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                     title="Choose your habit's type of measure"
                 />
 
-                <BinaryConstantSelectInput titles={['Measure', 'Yes/No']} onChange={(value) => {
+                <BinaryConstantSelectInput titles={['Yes/No', 'Measure']} onChange={(value) => {
                     setIsYn(value);
                 }} value={isYn} />
 
@@ -191,7 +190,7 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                     }}
                     value={frequency}
                 />
-                {isYn && (
+                {!isYn && (
                     <>
                         <Spacing size={20} />
                         <Label title="Now please define a goal to accomplish per period" />

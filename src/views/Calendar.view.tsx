@@ -187,7 +187,7 @@ interface CalendarDay {
     relative_frequency: number
 }
 
-export const CalendarView = React.memo(() => {
+export const CalendarView: React.FC = () => {
 
     const [period, setPeriod] = React.useState('month');
     const [selectedDayData, setSelectedDayData] = React.useState<CalendarDay | null>(null);
@@ -373,4 +373,4 @@ export const CalendarView = React.memo(() => {
             </ScrollView>
         </View >
     );
-});
+};

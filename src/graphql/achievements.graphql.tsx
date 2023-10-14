@@ -11,7 +11,26 @@ const HABIT_ACHIEVEMENTS = gql`
                 currentStreak
                 highestStreak
                 name
+                id
             }
+        }
+    }
+`;
+
+const ADD_ACHIEVEMENT = gql`
+    mutation AddAchievement (
+        $name: String!
+        $habit_id: String!
+    ) {
+        addAchievement (
+            achievement: {
+                name: $name
+                habId: $habit_id
+                currentStreak: 0
+                highestStreak: 0
+            }
+        ) {
+            message
         }
     }
 `;
@@ -26,9 +45,10 @@ const ACHIEVEMENT_MILESTONES = gql`
             data {
                 streak
                 date
+                id
             }
         }
     }
 `;
 
-export default { HABIT_ACHIEVEMENTS, ACHIEVEMENT_MILESTONES };
+export default { HABIT_ACHIEVEMENTS, ACHIEVEMENT_MILESTONES, ADD_ACHIEVEMENT };

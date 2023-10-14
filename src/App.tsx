@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { ToastProvider } from 'react-native-toast-notifications'
 
 import { LIGHT_THEME } from './themes/Light.theme';
 import { MainView } from './views/Main.view';
@@ -57,34 +58,36 @@ function App(): JSX.Element {
         <ApolloProvider client={client}>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <ThemeProvider initial={LIGHT_THEME}>
-                    <NavigationContainer>
-                        <Stack.Navigator initialRouteName="Welcome">
-                            <Stack.Screen
-                                name="Main" component={MainView}
-                                options={{
-                                    headerShown: false,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="Login" component={LoginView}
-                                options={{
-                                    headerShown: false,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="Register" component={RegisterView}
-                                options={{
-                                    headerShown: false,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="Welcome" component={WelcomeView}
-                                options={{
-                                    headerShown: false,
-                                }}
-                            />
-                        </Stack.Navigator>
-                    </NavigationContainer>
+                    <ToastProvider>
+                        <NavigationContainer>
+                            <Stack.Navigator initialRouteName="Welcome">
+                                <Stack.Screen
+                                    name="Main" component={MainView}
+                                    options={{
+                                        headerShown: false,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="Login" component={LoginView}
+                                    options={{
+                                        headerShown: false,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="Register" component={RegisterView}
+                                    options={{
+                                        headerShown: false,
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="Welcome" component={WelcomeView}
+                                    options={{
+                                        headerShown: false,
+                                    }}
+                                />
+                            </Stack.Navigator>
+                        </NavigationContainer>
+                    </ToastProvider>
                 </ThemeProvider>
             </GestureHandlerRootView>
         </ApolloProvider>

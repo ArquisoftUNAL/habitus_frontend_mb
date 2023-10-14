@@ -3,6 +3,15 @@ import { Theme } from '../themes/Theme.interface';
 
 export const createStyles = (theme: Theme) => {
     const styles = StyleSheet.create({
+        smallTextInputContainer: {
+            flexDirection: 'column',
+        },
+        smallTextConfirmButton: {
+            width: '100%',
+            backgroundColor: theme.colors.primary,
+            color: theme.colors.background,
+            fontSize: theme.fontSizes.small,
+        },
         smallTextInput: {
             width: '100%',
             backgroundColor: theme.colors.background,
@@ -99,14 +108,19 @@ export const createStyles = (theme: Theme) => {
             borderWidth: 2,
             borderColor: theme.colors.primary,
             backgroundColor: theme.colors.background,
-            width: '100%',
+            width: '40%',
             height: theme.spacing.medium,
         },
         checkBox: {
-
+            width: '100%',
+            height: '100%',
         },
         checkBoxChecked: {
             backgroundColor: theme.colors.primary,
+            width: '100%',
+            height: '100%',
+            borderRadius: 40,
+            color: theme.colors.background,
         }
     });
     return styles;

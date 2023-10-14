@@ -3,53 +3,6 @@ import { Theme } from '../themes/Theme.interface';
 
 export const createStyles = (theme: Theme) => {
     const styles = StyleSheet.create({
-        mainContainer: {
-            flex: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        rowContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        habitContainer: {
-            flex: 3,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        dateContainer: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        headerContainer: {
-            backgroundColor: theme.colors.primary,
-            width: '100%',
-            borderWidth: 1,
-            borderColor: theme.colors.background,
-        },
-        headerText: {
-            fontSize: theme.fontSizes.medium,
-            fontWeight: 'bold',
-            color: theme.colors.background,
-            textAlign: 'center',
-        },
-        itemContainer: {
-            backgroundColor: theme.colors.background,
-        },
-        itemText: {
-            fontSize: theme.fontSizes.medium,
-            color: theme.colors.primary,
-        },
-        itemCheckbox: {
-            color: theme.colors.primary,
-        },
-        itemInput: {
-            color: theme.colors.primary,
-        },
-
-        // Accordeon case
         accordionSuperContainer: {
             alignItems: 'center',
             justifyContent: 'flex-start',
@@ -122,6 +75,12 @@ export const createStyles = (theme: Theme) => {
             paddingHorizontal: theme.spacing.smallMedium,
             maxHeight: '50%',
         },
+        dateContainer: {
+            alignItems: 'center',
+            width: theme.spacing.extraLarge,
+            paddingHorizontal: 0,
+            margin: 0
+        },
         dateHeader: {
             backgroundColor: theme.colors.primary,
             margin: 0,
@@ -129,7 +88,8 @@ export const createStyles = (theme: Theme) => {
             textAlign: 'center',
             borderWidth: 1,
             borderColor: theme.colors.background,
-            width: '20%',
+            minWidth: '100%',
+            maxWidth: '100%',
         },
         dateContent: {
             alignItems: 'center',
@@ -137,8 +97,8 @@ export const createStyles = (theme: Theme) => {
             backgroundColor: theme.colors.background,
             borderWidth: 1,
             borderColor: theme.colors.background,
-            minWidth: '20%',
-            maxWidth: '20%',
+            minWidth: '100%',
+            maxWidth: '100%',
         },
         coloredCircle: {
             width: theme.spacing.medium,

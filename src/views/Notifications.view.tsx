@@ -11,7 +11,7 @@ import { useTheme } from '../themes/Theme.context';
 import { ScrollView } from 'react-native-gesture-handler';
 import { GraphQLError } from '../components/GraphQLError';
 
-export const NotificationsView = React.memo(() => {
+export const NotificationsView: React.FC = () => {
 
     const { theme } = useTheme();
     const styles = {
@@ -22,7 +22,6 @@ export const NotificationsView = React.memo(() => {
 
     // Get habits every time the component is rendered
     const { data, error, loading } = useQuery(graphql.USER_NOTIFICATIONS)
-
 
     if (error) return (
         <GraphQLError error={error} />
@@ -66,4 +65,4 @@ export const NotificationsView = React.memo(() => {
             </ScrollView>
         </View >
     );
-});
+};

@@ -5,8 +5,8 @@ export const createStyles = (theme: Theme) => {
     const styles = StyleSheet.create({
         mainContainer: {
             backgroundColor: theme.colors.background,
-            height: "100%",
             width: "100%",
+            height: "100%",
             paddingHorizontal: theme.spacing.small,
             paddingVertical: theme.spacing.medium,
         },
@@ -20,7 +20,6 @@ export const createStyles = (theme: Theme) => {
             borderRightColor: theme.colors.primary,
         },
         habitItem: {
-            alignItems: 'center',
             justifyContent: 'center',
             color: theme.colors.primary,
             backgroundColor: theme.colors.background,
@@ -51,7 +50,6 @@ export const createStyles = (theme: Theme) => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: theme.colors.background,
-            height: "30%",
             width: "100%",
             paddingHorizontal: theme.spacing.small,
             paddingVertical: theme.spacing.small,
@@ -62,7 +60,6 @@ export const createStyles = (theme: Theme) => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: theme.colors.background,
-            height: "30%",
             width: "100%",
             paddingHorizontal: theme.spacing.small,
             paddingVertical: theme.spacing.small,
@@ -82,13 +79,35 @@ export const createStyles = (theme: Theme) => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: theme.colors.secondary,
-            height: "50%",
-            width: "50%",
+            height: "60%",
+            width: "80%",
             paddingHorizontal: theme.spacing.small,
             paddingVertical: theme.spacing.small,
             borderWidth: 1,
             borderColor: theme.colors.primary,
             borderRadius: 20,
+        },
+        habitText: {
+            color: theme.colors.primary,
+            fontSize: theme.fontSizes.small,
+            textAlign: 'center',
+            marginBottom: theme.spacing.small,
+            minWidth: "100%",
+            minHeight: 10,
+        },
+        habitItemContainer: {
+            flex: 1,
+            flexDirection: 'column',
+            minWidth: "100%",
+            minHeight: 10,
+            maxHeight: 40,
+            backgroundColor: theme.colors.primary,
+        },
+        habitsList: {
+            flex: 3,
+            flexDirection: 'row',
+            width: "100%",
+            backgroundColor: theme.colors.tertiary,
         }
     });
     return styles;

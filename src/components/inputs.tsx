@@ -40,16 +40,29 @@ export const SmallTextFieldInput: React.FC<TextInputProps> = ({ title, masked, e
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
+    const [tempValue, setTempValue] = React.useState<string>(value || "");
+
     return (
-        <View>
+        <View style={styles.smallTextInputContainer}>
             <TextInput
                 style={styles.smallTextInput}
                 placeholder={title}
                 secureTextEntry={masked}
-                onChangeText={onChange}
-                value={value}
+                onChangeText={setTempValue}
+                value={tempValue}
                 editable={enabled}
             />
+            {
+                tempValue.length > 0 && enabled &&
+                <Text
+                    style={styles.smallTextConfirmButton}
+                    onPress={() => {
+                        console.log("pressed");
+                        onChange && onChange(tempValue);
+                    }}
+                >✔️
+                </Text>
+            }
         </View>
     );
 }
@@ -139,11 +152,12 @@ export const CheckBoxInput: React.FC<CheckBoxInputProps> = ({ value, enabled, on
             <Pressable
                 style={styles.checkBox}
                 onPress={() => {
+                    console.log("pressed")
                     onChange(!value);
                 }}
                 disabled={!enabled}
             >
-                {value && <View style={styles.checkBoxChecked} />}
+                {value && <Text style={styles.checkBoxChecked}></Text>}
             </Pressable>
         </View>
     );
