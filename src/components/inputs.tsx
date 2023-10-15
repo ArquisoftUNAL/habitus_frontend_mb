@@ -26,6 +26,7 @@ export const TextFieldInput: React.FC<TextInputProps> = ({ title, masked, enable
             <TextInput
                 style={styles.largeTextInput}
                 placeholder={title}
+                placeholderTextColor={theme.colors.primary}
                 secureTextEntry={masked}
                 onChangeText={onChange}
                 value={value}
@@ -47,6 +48,7 @@ export const SmallTextFieldInput: React.FC<TextInputProps> = ({ title, masked, e
             <TextInput
                 style={styles.smallTextInput}
                 placeholder={title}
+                placeholderTextColor={theme.colors.primary}
                 secureTextEntry={masked}
                 onChangeText={setTempValue}
                 value={tempValue}

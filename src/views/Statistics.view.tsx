@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useQuery, useLazyQuery } from '@apollo/client';
 
@@ -26,13 +26,17 @@ export const StatisticsView = React.memo(() => {
 
     // Get habits to choose where to take statistics from
     const { loading: habitsLoading, error: habitsError, data: habitsData } = useQuery(graphql.USER_HABITS);
-
     const [
         getHabitStatistics,
         { loading: statisticsLoading, error: statisticsError, data: statisticsData }
     ] = useLazyQuery(
-        graphql.GET_HABIT_STATISTICS
+        graphql.GET_FULL_STATISTICS
     );
+
+    useEffect(() => {
+        if (habit)
+            getHabitStatistics({ variables: { hab_id: habit.value } });
+    }, [habit]);
 
     console.log(JSON.stringify(statisticsError));
     let habits = [];

@@ -6,6 +6,12 @@ export const createStyles = (theme: Theme) => {
         drawerContentView: {
             width: "100%"
         },
+        headerBackgroundContainerStyle: {
+            backgroundColor: theme.colors.background,
+            color: theme.colors.primary,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.colors.primary,
+        },
         drawerHeader: {
             backgroundColor: theme.colors.primary,
             marginTop: theme.spacing.medium,

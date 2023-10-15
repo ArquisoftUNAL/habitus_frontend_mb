@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { CommonActions } from '@react-navigation/native';
@@ -25,11 +25,206 @@ interface HabitsViewProps {
     navigation: any;
 };
 
+interface RenderDayProps {
+    initialSection: any;
+    date: string;
+    index: number;
+    styles: any;
+    deleteHabitdata: any;
+    createHabitdata: any;
+    performHabitdataUpdate: any;
+};
+
 const PAGE_LIMIT = 1000;
 const DAYS_OFFSET = 7;
-const ALLOWED_BACKDAYS = 1;
+const ALLOWED_BACKDAYS = 5;
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const RenderDay = memo<RenderDayProps>(({
+    initialSection, date, index, styles,
+    deleteHabitdata, createHabitdata, performHabitdataUpdate,
+}) => {
+
+    const [section, setSection] = React.useState<any>(initialSection);
+    const toast = useToast();
+
+    const dataItem = section.data.find(
+        (dataItem: any) => dataItem.hab_dat_collected_at === date
+    )
+
+    const calendarDate = new Date(date);
+    calendarDate.setDate(calendarDate.getDate() + 1);
+
+    const dayIndex = calendarDate.getDay();
+    const weekDay = days[dayIndex];
+
+    return (
+        <View
+            style={styles.dateContainer}
+        >
+            <Text style={styles.dateHeader}>
+                {weekDay}
+            </Text>
+            <View style={styles.dateContent}>
+                {
+                    section.habit.hab_is_yn ?
+                        <CheckBoxInput
+                            enabled={index < ALLOWED_BACKDAYS}
+                            onChange={(new_value) => {
+                                if (!new_value && dataItem) {
+                                    // Since this is a YN habit, we need to delete the data
+                                    deleteHabitdata({
+                                        variables: {
+                                            datId: dataItem.hab_dat_id
+                                        },
+                                        onCompleted: (data: any) => {
+                                            toast.show(
+                                                "Habit data deleted",
+                                                {
+                                                    type: "success",
+                                                }
+                                            )
+                                            setSection({
+                                                ...section,
+                                                data: section.data.filter(
+                                                    (dataItem: any) => dataItem.hab_dat_id !== data.deleteHabitdata.data.hab_dat_id
+                                                )
+                                            });
+                                        },
+                                        onError: (error: any) => {
+                                            toast.show(
+                                                "Error deleting habit data: " + error.message,
+                                                {
+                                                    type: "danger",
+                                                }
+                                            );
+                                        }
+                                    });
+                                } else {
+                                    // Since this is a YN habit, we need to create the data
+                                    createHabitdata({
+                                        variables: {
+                                            amount: 1,
+                                            habit_id: section.habit.hab_id,
+                                            collected_at: date,
+                                        },
+                                        onCompleted: (data: any) => {
+                                            toast.show(
+                                                "Habit data created",
+                                                {
+                                                    type: "success",
+                                                }
+                                            )
+                                            setSection({
+                                                ...section,
+                                                data: [...section.data, data.addHabitdata.data]
+                                            });
+                                        },
+                                        onError: (error: any) => {
+                                            toast.show(
+                                                "Error creating habit data: " + error.message,
+                                                {
+                                                    type: "danger",
+                                                }
+                                            );
+                                        }
+                                    });
+                                }
+                            }}
+                            value={dataItem !== undefined}
+                        />
+                        :
+                        <SmallTextFieldInput
+                            title="None"
+                            masked={false}
+                            enabled={index < ALLOWED_BACKDAYS}
+                            onChange={(value) => {
+                                let amount = parseFloat(value);
+
+                                if (isNaN(amount)) {
+                                    amount = 0;
+                                }
+
+                                if (amount <= 0) {
+                                    return;
+                                }
+
+                                if (dataItem) {
+                                    performHabitdataUpdate({
+                                        variables: {
+                                            datId: dataItem ? dataItem.hab_dat_id : "",
+                                            amount: amount,
+                                        },
+                                        onCompleted: (data: any) => {
+                                            toast.show(
+                                                "Habit data updated",
+                                                {
+                                                    type: "success",
+                                                }
+                                            )
+
+                                            const newSection = {
+                                                ...section,
+                                                data: section.data.map(
+                                                    (dataItem: any) => {
+                                                        if (dataItem.hab_dat_id === data.updateHabitdata.data.hab_dat_id) {
+                                                            return data.updateHabitdata.data;
+                                                        }
+
+                                                        return dataItem;
+                                                    }
+                                                )
+                                            }
+
+                                            setSection(newSection);
+                                        },
+                                        onError: (error: any) => {
+                                            toast.show(
+                                                "Error updating habit data: " + error.message,
+                                                {
+                                                    type: "danger",
+                                                }
+                                            );
+                                        }
+                                    });
+                                } else {
+                                    createHabitdata({
+                                        variables: {
+                                            amount: amount,
+                                            habit_id: section.habit.hab_id,
+                                            collected_at: date,
+                                        },
+                                        onCompleted: (data: any) => {
+                                            toast.show(
+                                                "Habit data created",
+                                                {
+                                                    type: "success",
+                                                }
+                                            )
+                                            setSection({
+                                                ...section,
+                                                data: [...section.data, data.addHabitdata.data]
+                                            });
+                                        },
+                                        onError: (error: any) => {
+                                            toast.show(
+                                                "Error creating habit data: " + error.message,
+                                                {
+                                                    type: "danger",
+                                                }
+                                            );
+                                        }
+                                    });
+                                }
+                            }}
+                            value={dataItem ? dataItem.hab_dat_amount : ""}
+                        />
+                }
+            </View>
+        </View>
+    )
+});
 
 export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
 
@@ -70,28 +265,13 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
         }
     });
 
-    const [performHabitDeletion, { error: habitDeletionError }] = useMutation(graphql.DELETE_HABIT);
-    if (habitDeletionError) {
-        console.log(JSON.stringify(habitDeletionError));
-        toast.show("Error deleting habit", {
-            type: "danger",
-        });
-    }
+    const [performHabitDeletion, { loading: loadingHabitDeletion }] = useMutation(graphql.DELETE_HABIT);
 
-    const [performHabitdataUpdate, { error: habitdataUpdateError }] = useMutation(graphql.UPDATE_HABIT_DATA);
-    if (habitdataUpdateError) toast.show("Error updating habit data", {
-        type: "danger",
-    });
+    const [performHabitdataUpdate, { loading: loadingHabitUpdate }] = useMutation(graphql.UPDATE_HABIT_DATA);
 
-    const [createHabitdata, { error: habitdataCreateError }] = useMutation(graphql.ADD_HABIT_DATA);
-    if (habitdataCreateError) {
-        console.log(JSON.stringify(habitdataCreateError));
-    }
+    const [createHabitdata] = useMutation(graphql.ADD_HABIT_DATA);
 
-    const [deleteHabitdata, { error: habitdataDeleteError }] = useMutation(graphql.DELETE_HABIT_DATA);
-    if (habitdataDeleteError) toast.show("Error updating habit data", {
-        type: "danger",
-    });
+    const [deleteHabitdata] = useMutation(graphql.DELETE_HABIT_DATA);
 
     React.useEffect(() => {
         // Launch query always on init and on data change
@@ -102,7 +282,7 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
         return <GraphQLError error={error} />
     }
 
-    if (loading || !data) {
+    if (loading || !data || loadingHabitDeletion || loadingHabitUpdate) {
         return <LoadingView />
     }
 
@@ -197,9 +377,27 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                 <View style={styles.accordionHeaderItem}>
                     <Pressable
                         onPress={() => {
+                            console.log("Deleting habit: " + section.habit.hab_id)
                             performHabitDeletion({
                                 variables: {
                                     id: section.habit.hab_id,
+                                },
+                                onCompleted: (data: any) => {
+                                    toast.show(
+                                        "Habit deleted",
+                                        {
+                                            type: "success",
+                                        }
+                                    )
+                                    launchHabitsQuery();
+                                },
+                                onError: (error: any) => {
+                                    toast.show(
+                                        "Error deleting habit: " + error.message,
+                                        {
+                                            type: "danger",
+                                        }
+                                    );
                                 }
                             })
                         }}
@@ -214,166 +412,6 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                 </View>
             </View>
         );
-    };
-
-    const RenderDay = (section: any, date: string, index: number) => {
-        const dataItem = section.data.find(
-            (dataItem: any) => dataItem.hab_dat_collected_at === date
-        )
-
-        const weekDay = days[new Date(date).getDay()];
-
-        return (
-            <View
-                style={styles.dateContainer}
-            >
-                <Text style={styles.dateHeader}>
-                    {weekDay}
-                </Text>
-                <View style={styles.dateContent}>
-                    {
-                        section.habit.hab_is_yn ?
-                            <CheckBoxInput
-                                enabled={index < ALLOWED_BACKDAYS}
-                                onChange={(new_value) => {
-                                    console.log(new_value, dataItem)
-                                    if (new_value && dataItem) {
-                                        // Since this is a YN habit, we need to delete the data
-                                        deleteHabitdata({
-                                            variables: {
-                                                datId: dataItem.hab_dat_id
-                                            },
-                                            onCompleted: (data) => {
-                                                toast.show(
-                                                    "Habit data deleted",
-                                                    {
-                                                        type: "success",
-                                                    }
-                                                )
-                                                section.data = section.data.filter(
-                                                    (dataItem: any) => dataItem.hab_dat_id !== data.deleteHabitdata.hab_dat_id
-                                                );
-                                            },
-                                            onError: (error) => {
-                                                toast.show(
-                                                    "Error deleting habit data: " + error.message,
-                                                    {
-                                                        type: "danger",
-                                                    }
-                                                );
-                                            }
-                                        });
-                                    } else {
-                                        // Since this is a YN habit, we need to create the data
-                                        createHabitdata({
-                                            variables: {
-                                                amount: 1,
-                                                habit_id: section.habit.hab_id,
-                                                collected_at: date,
-                                            },
-                                            onCompleted: (data) => {
-                                                toast.show(
-                                                    "Habit data created",
-                                                    {
-                                                        type: "success",
-                                                    }
-                                                )
-                                                section.data.push(data.addHabitdata)
-                                            },
-                                            onError: (error) => {
-                                                toast.show(
-                                                    "Error creating habit data: " + error.message,
-                                                    {
-                                                        type: "danger",
-                                                    }
-                                                );
-                                            }
-                                        });
-                                    }
-                                }}
-                                value={dataItem !== undefined}
-                            />
-                            :
-                            <SmallTextFieldInput
-                                title="None"
-                                masked={false}
-                                enabled={index < ALLOWED_BACKDAYS}
-                                onChange={(value) => {
-                                    let amount = parseFloat(value);
-
-                                    if (isNaN(amount)) {
-                                        amount = 0;
-                                    }
-
-                                    if (amount <= 0) {
-                                        return;
-                                    }
-
-                                    if (dataItem) {
-                                        performHabitdataUpdate({
-                                            variables: {
-                                                datId: dataItem ? dataItem.hab_dat_id : "",
-                                                amount: amount,
-                                            },
-                                            onCompleted: (data) => {
-                                                toast.show(
-                                                    "Habit data updated",
-                                                    {
-                                                        type: "success",
-                                                    }
-                                                )
-                                                section.data = section.data.map(
-                                                    (dataItem: any) => {
-                                                        if (dataItem.hab_dat_id === data.updateHabitdata.hab_dat_id) {
-                                                            return data.updateHabitdata;
-                                                        }
-
-                                                        return dataItem;
-                                                    }
-                                                );
-                                            },
-                                            onError: (error) => {
-                                                toast.show(
-                                                    "Error updating habit data: " + error.message,
-                                                    {
-                                                        type: "danger",
-                                                    }
-                                                );
-                                            }
-                                        });
-                                    } else {
-                                        createHabitdata({
-                                            variables: {
-                                                amount: amount,
-                                                habit_id: section.habit.hab_id,
-                                                collected_at: date,
-                                            },
-                                            onCompleted: (data) => {
-                                                toast.show(
-                                                    "Habit data created",
-                                                    {
-                                                        type: "success",
-                                                    }
-                                                )
-                                                section.data.push(data.addHabitdata)
-                                            },
-                                            onError: (error) => {
-                                                toast.show(
-                                                    "Error creating habit data: " + error.message,
-                                                    {
-                                                        type: "danger",
-                                                    }
-                                                );
-                                            }
-                                        });
-                                    }
-                                }}
-                                value={dataItem ? dataItem.hab_dat_amount : ""}
-                            />
-                    }
-                </View>
-            </View>
-        )
     };
 
     // Render section content
@@ -399,7 +437,16 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                     >
                         {
                             dates.map((date: string, index: number) => {
-                                return RenderDay(section, date, index);
+                                return <RenderDay
+                                    key={index}
+                                    initialSection={section}
+                                    date={date}
+                                    index={index}
+                                    styles={styles}
+                                    deleteHabitdata={deleteHabitdata}
+                                    createHabitdata={createHabitdata}
+                                    performHabitdataUpdate={performHabitdataUpdate}
+                                />
                             })
                         }
                     </ScrollView>
@@ -437,6 +484,13 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                             });
                         }}
                         data={modalHabitState.habit}
+                        onOperationCompleted={() => {
+                            launchHabitsQuery();
+                            setModalHabitState({
+                                ...modalHabitState,
+                                visible: false,
+                            });
+                        }}
                     />
                 </Modal>
 

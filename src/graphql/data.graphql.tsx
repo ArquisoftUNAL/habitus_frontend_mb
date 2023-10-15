@@ -52,6 +52,12 @@ const DELETE_HABIT_DATA = gql`
             datId: $datId
         ) {
             message
+            data {
+                hab_dat_id
+                hab_dat_amount
+                hab_dat_collected_at
+                hab_id
+            }
         }
     }
 `;

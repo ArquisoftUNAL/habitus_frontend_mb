@@ -152,6 +152,8 @@ export const MainView = React.memo<MainProps>(({ navigation }) => {
                 drawerStyle: styles.drawer,
                 headerTitle: 'This is Habitus!',
                 headerTintColor: theme.colors.primary,
+                headerBackgroundContainerStyle: styles.headerBackgroundContainerStyle,
+                headerBackground: () => <View style={styles.headerBackgroundContainerStyle} />,
                 drawerPosition: 'left',
                 headerShown: true,
             }}

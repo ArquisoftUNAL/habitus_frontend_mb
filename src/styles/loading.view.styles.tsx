@@ -9,8 +9,11 @@ export const createStyles = (theme: Theme) => {
             alignItems: 'center',
             width: "100%",
             height: "100%",
-            opacity: 0.3,
-            backgroundColor: theme.colors.primary,
+            opacity: 0.6,
+            backgroundColor: theme.colors.background,
+            borderWidht: 1,
+            borderColor: theme.colors.primary,
+            borderRadius: 10,
         },
         mainLoadingText: {
             padding: theme.spacing.medium,

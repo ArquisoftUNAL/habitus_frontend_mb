@@ -16,6 +16,7 @@ import { TextFieldInput } from '../components/inputs';
 import { GraphQLError } from '../components/GraphQLError';
 import { Separator } from '../components/Separator';
 import { Spacing } from '../components/Spacing';
+import { SinglePieChart } from '../components/SinglePieChart';
 
 const CollapsableHabitsContainer = memo(({ habits, chosenHabit, onHabitChange }: any) => {
 
@@ -191,8 +192,6 @@ const AddAchievementContainer = memo<AddAchievementContainerProps>(({ addAchieve
 
 export const AchievementsView: React.FC = () => {
     const [habit, setHabit] = React.useState<any>({ hab_id: "" });
-    const [achievement, setAchievement] = React.useState<any>({ ach_id: "" });
-    const [milestones, setMilestones] = React.useState<any[]>([]);
 
     const { theme } = useTheme();
     const toast = useToast();
@@ -210,10 +209,14 @@ export const AchievementsView: React.FC = () => {
         graphql.HABIT_ACHIEVEMENTS
     );
 
+    const achievement = (achievementData) ? achievementData.achievementsByHabit.data[0] : null;
+
     // Fetch milestones on achievement change
     const [fetchMilestones, { data: milestonesData, error: milestonesError, loading: milestonesLoading }] = useLazyQuery(
         graphql.ACHIEVEMENT_MILESTONES
     );
+
+    const milestones = (milestonesData && achievement) ? milestonesData.milestonesByAchievement.data : [];
 
     // Create achievements
     const [addAchievement, _] = useMutation(
@@ -228,31 +231,11 @@ export const AchievementsView: React.FC = () => {
                 onCompleted: (data: any) => {
                     const achievement = data.achievementsByHabit.data[0];
                     if (achievement) {
-                        setAchievement(achievement);
                         fetchMilestones(
                             {
                                 variables: { id: achievement.id },
-                                onCompleted: (data: any) => {
-                                    const milestones = data.milestonesByAchievement.data;
-                                    if (milestones) {
-                                        setMilestones(milestones);
-                                    } else {
-                                        setMilestones([]);
-                                    }
-                                },
-                                onError: (error: any) => {
-                                    console.log(JSON.stringify(error));
-                                    toast.show(
-                                        "Error fetching milestones",
-                                        { type: "danger" }
-                                    );
-                                    setMilestones([]);
-                                }
                             }
                         );
-                    } else {
-                        setAchievement({ ach_id: "" });
-                        setMilestones([]);
                     }
                 },
                 onError: (error: any) => {
@@ -261,8 +244,6 @@ export const AchievementsView: React.FC = () => {
                         "Error fetching milestones",
                         { type: "danger" }
                     );
-                    setAchievement({ ach_id: "" });
-                    setMilestones([]);
                 }
             }
         );
@@ -301,33 +282,40 @@ export const AchievementsView: React.FC = () => {
             </View>
         );
 
-        if (achievementData) {
-            const foundAchievement = achievementData.achievementsByHabit.data[0];
+        if (achievement) {
+            const pieChartData = [
+                {
+                    text: "Current Streak",
+                    value: achievement.currentStreak,
+                    color: theme.colors.primary
+                },
+                {
+                    text: "Remaining Streak",
+                    value: achievement.highestStreak - achievement.currentStreak,
+                    color: theme.colors.tertiary
+                }
+            ];
 
-            if (!foundAchievement) return (
-                <AddAchievementContainer
-                    addAchievementMutation={addAchievement}
-                    habit={habit}
-                    onCreation={() => {
-                        updateAchievements();
-                    }}
-                />
-            );
 
             return (
                 <View style={styles.achievementsContainer}>
                     <Text style={styles.mediumText}>
                         Achievement
                     </Text>
-                    <Text style={styles.smallText}>
-                        Name: {achievement.name}
-                    </Text>
-                    <Text style={styles.smallText}>
-                        Current streak: {achievement.currentStreak}
-                    </Text>
-                    <Text style={styles.smallText}>
-                        Max streak: {achievement.highestStreak}
-                    </Text>
+                    <View>
+                        <Text style={styles.smallText}>
+                            Name: {achievement.name}
+                        </Text>
+                        <Text style={styles.smallText}>
+                            Current streak: {achievement.currentStreak}
+                        </Text>
+                        <Text style={styles.smallText}>
+                            Max streak: {achievement.highestStreak}
+                        </Text>
+                        <SinglePieChart
+                            data={pieChartData}
+                        />
+                    </View>
                 </View>
             );
         }
@@ -341,40 +329,12 @@ export const AchievementsView: React.FC = () => {
                 }}
             />
         );
-
     }
 
     // Get milestones component
     const MilestonesComponent = () => {
         if (milestonesLoading) return (
             <LoadingView />
-        );
-
-        if (milestonesData) return (
-            <View style={styles.milestonesContainer}>
-                <Text style={styles.mediumText}>
-                    Milestones
-                </Text>
-                <ScrollView>
-                    {
-                        milestones.length > 0 ?
-                            milestones.map((milestone: any) => (
-                                <View key={milestone.id}>
-                                    <Text style={styles.smallText}>
-                                        Date: {milestone.date}
-                                    </Text>
-                                    <Text style={styles.smallText}>
-                                        Streak achieved: {milestone.streak}
-                                    </Text>
-                                </View>
-                            ))
-                            :
-                            <Text style={styles.smallText}>
-                                No milestones yet
-                            </Text>
-                    }
-                </ScrollView>
-            </View>
         );
 
         if (milestonesError) {
@@ -384,12 +344,53 @@ export const AchievementsView: React.FC = () => {
             );
         }
 
-        if (achievement.ach_id === "") return (
+        if (!achievement) return (
             <View style={styles.milestonesContainer}>
                 <Text style={styles.mediumText}>
                     No achievement chosen
                 </Text>
             </View>
+        );
+
+        if (milestones) return (
+            <View style={styles.milestonesContainer}>
+                <Text style={styles.mediumText}>
+                    Milestones
+                </Text>
+                <ScrollView>
+                    {
+                        milestones.length > 0 ?
+                            milestones.map((milestone: any) => (
+                                <View key={milestone.id} style={styles.milestoneView}>
+                                    <View style={styles.milestoneInfo}>
+                                        <Text style={styles.milestoneInfoText}>
+                                            Date: {milestone.date}
+                                        </Text>
+                                        <Text style={styles.milestoneInfoText}>
+                                            Streak achieved: {milestone.streak}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.milestoneProgressContainer}>
+                                        <View style={{
+                                            backgroundColor: theme.colors.primary,
+                                            height: 10,
+                                            width: `${milestone.streak < achievement.highestStreak ?
+                                                (milestone.streak * 100) / achievement.highestStreak
+                                                :
+                                                100
+                                                }%`,
+                                            borderRadius: 20,
+                                        }} />
+                                    </View>
+                                </View>
+                            ))
+                            :
+                            <Text style={styles.smallText}>
+                                No milestones yet
+                            </Text>
+                    }
+                </ScrollView >
+            </View >
         );
     }
 
@@ -405,7 +406,6 @@ export const AchievementsView: React.FC = () => {
                     habits={habitData.habitsByUser}
                     chosenHabit={habit}
                     onHabitChange={(habit: any) => {
-                        console.log("Habit", habit)
                         setHabit(habit);
                     }}
                 />

@@ -7,12 +7,16 @@ export const createStyles = (theme: Theme) => {
             flexDirection: 'column',
         },
         smallTextConfirmButton: {
-            width: '100%',
-            backgroundColor: theme.colors.primary,
+            minWidth: '100%',
+            maxWidth: '100%',
+            textAlign: 'center',
+            backgroundColor: 'white',
             color: theme.colors.background,
             fontSize: theme.fontSizes.small,
         },
         smallTextInput: {
+            alignItems: 'center',
+            justifyContent: 'center',
             width: '100%',
             backgroundColor: theme.colors.background,
             color: theme.colors.primary,

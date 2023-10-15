@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useMutation, useQuery } from '@apollo/client';
 import ColorPicker, { HueCircular, Panel1, PreviewText, Swatches } from 'reanimated-color-picker';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { useToast } from 'react-native-toast-notifications';
 
 import graphql from '../graphql';
 import { PageTitle, Label } from '../components/texts';
@@ -14,11 +15,16 @@ import { Separator } from '../components/Separator';
 import { CustomButton } from '../components/Button';
 import { LoadingView } from './LoadingView';
 import { GraphQLError } from '../components/GraphQLError';
+import { ValidationError } from '../components/ValidationError';
+
+import { habitSchema } from '../validators/habits.validators';
+import { validate } from '../validators/validate';
 
 interface CreateUpdateHabitProps {
     type: 'create' | 'edit';
     data?: any;
     onClose: () => void;
+    onOperationCompleted: () => void;
 };
 
 const frequences = [
@@ -48,10 +54,12 @@ const frequences = [
     }
 ];
 
-export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClose, type, data }) => {
+export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClose, onOperationCompleted, type, data }) => {
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
+
+    const toast = useToast();
 
     const [name, setName] = React.useState<string>(type === 'create' ? '' : data.hab_name);
     const [description, setDescription] = React.useState<string>(type === 'create' ? '' : data.hab_description);
@@ -63,8 +71,7 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
             (freq) => freq.value === data.hab_freq_type
         ) ?? frequences[0]
     );
-
-    console.log(frequency);
+    const [category, setCategory] = React.useState<any>(null);
 
     let given_color = "000000";
 
@@ -83,6 +90,9 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
     const [color, setColor] = React.useState<string>(given_color);
     const [isFavorite, setIsFavorite] = React.useState<boolean>(type === 'create' ? false : data.hab_is_favorite);
 
+    // Special case, since this is a modal, toast errors are not visible here
+    const [errors, setErrors] = React.useState<string>('');
+
     const { loading: loadingCategories, error: errorsCategories, data: dataCategories } = useQuery(graphql.GET_CATEGORIES);
 
     // Build choose category options
@@ -97,23 +107,23 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
         });
     }
 
-    const [category, setCategory] = React.useState<any>(
-        type === 'create' ? (categories.length === 0 ? {} : categories[0]) : (categories?.find(
-            (cat: any) => cat.value === data.cat_id
-        ) ?? categories[0])
-    );
+    useEffect(() => {
+        // If updating, preselect the category
+        if (!category && type === 'edit') {
+            const category = categories.find((cat: any) => cat.value === data.cat_id);
 
-    console.log(category);
+            if (category) {
+                setCategory(category);
+            }
+        }
+    }, [dataCategories]);
+
     const [performCreateMutation, {
         loading: loadingCreateMutation, error: errorCreateMutation, data: dataCreateMutation
     }] = useMutation(graphql.ADD_HABIT);
     const [performUpdateMutation, {
         loading: loadingUpdateMutation, error: errorUpdateMutation, data: dataUpdateMutation
     }] = useMutation(graphql.UPDATE_HABIT);
-
-    if (dataCreateMutation || dataUpdateMutation) {
-        onClose();
-    }
 
     if (errorsCategories) {
         return <GraphQLError error={errorsCategories} />
@@ -246,25 +256,69 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
 
                 <Spacing size={10} />
                 <Separator />
+                <Spacing size={20} />
+                {
+                    errors.length > 0 && (
+                        <ValidationError error={errors} />
+                    )
+                }
+                <Spacing size={20} />
                 <CustomButton title="Save" type="primary" action={() => {
+                    // Validate data
+                    const errors = validate(
+                        habitSchema,
+                        {
+                            name, description, isFavorite, isYn, color,
+                            goal, units, frequency: frequency.value, category: category.value
+                        });
+
+                    setErrors(errors ?? '');
+
+                    if (errors) {
+                        return;
+                    }
+
                     const mutation_data = {
                         variables: {
                             name, description, is_favorite: isFavorite, is_yn: isYn, color: color,
                             goal, units, frequency_type: frequency.value, category: category.value
+                        },
+                        onCompleted: () => {
+                            toast.show(
+                                type === 'create'
+                                    ? "Habit created successfully!"
+                                    : "Habit updated successfully!",
+                                {
+                                    type: "success"
+                                }
+                            );
+                            onOperationCompleted();
+                        },
+                        onError: (error: any) => {
+                            toast.show(
+                                type === 'create'
+                                    ? "Error creating habit!"
+                                    : "Error updating habit!",
+                                {
+                                    type: "danger"
+                                }
+                            );
+                            console.log(error);
                         }
                     };
 
-                    console.log(mutation_data);
-
-                    type === 'create' ? performCreateMutation(mutation_data) : performUpdateMutation({
+                    type === 'create' ? performCreateMutation(
+                        mutation_data
+                    ) : performUpdateMutation({
+                        ...mutation_data,
                         variables: {
-                            id: data.hab_id,
-                            ...mutation_data.variables
+                            ...mutation_data.variables,
+                            id: data.hab_id
                         }
                     });
-                }} />
+                }
+                } />
 
-                <Spacing size={20} />
                 <CustomButton title="Cancel" type="secondary" action={() => {
                     onClose();
                 }} />

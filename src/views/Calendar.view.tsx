@@ -365,13 +365,6 @@ export const CalendarView: React.FC = () => {
                             <Text style={styles.selectedDayTextTitle}>
                                 Relative frequency (based on month)
                             </Text>
-                            {/* <PieChart
-                                widthAndHeight={200}
-                                series={[selectedDayData.relative_frequency, 1 - selectedDayData.relative_frequency]}
-                                sliceColor={[theme.colors.secondary, theme.colors.tertiary]}
-                                coverRadius={0.45}
-                                coverFill={theme.colors.background}
-                            /> */}
                             <SinglePieChart
                                 data={pieChartData}
                             />

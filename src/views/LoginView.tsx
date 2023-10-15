@@ -101,7 +101,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ navigation }) => {
 
                     // Validate the input
                     const error = validate(loginSchema, { email, password });
-                    console.log(loginSchema)
                     console.log(error)
                     if (error) {
                         toast.show(error, { type: 'danger' });

@@ -3,7 +3,6 @@
 import Joi from 'joi';
 
 export const validate = (schema: Joi.Schema, object: any) => {
-    console.log(object)
     const { error } = schema.validate(object);
     if (error) {
         const errors: any = {};

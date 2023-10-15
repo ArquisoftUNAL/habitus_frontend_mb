@@ -108,6 +108,33 @@ export const createStyles = (theme: Theme) => {
             flexDirection: 'row',
             width: "100%",
             backgroundColor: theme.colors.tertiary,
+        },
+        milestoneView: {
+            flexDirection: 'row',
+            marginBottom: theme.spacing.medium,
+            maxWidth: "100%",
+        },
+        milestoneInfo: {
+            flexDirection: 'column',
+            borderWidth: 1,
+            borderColor: theme.colors.primary,
+            borderRadius: 20,
+            paddingHorizontal: theme.spacing.medium,
+            paddingVertical: theme.spacing.small,
+            height: "100%",
+        },
+        milestoneInfoText: {
+            color: theme.colors.primary,
+            fontSize: theme.fontSizes.small,
+            textAlign: 'center',
+        },
+        milestoneProgressContainer: {
+            minWidth: "50%",
+            maxWidth: "50%",
+            height: "100%",
+            backgroundColor: theme.colors.background,
+            paddingHorizontal: theme.spacing.medium,
+            paddingVertical: theme.spacing.medium,
         }
     });
     return styles;
