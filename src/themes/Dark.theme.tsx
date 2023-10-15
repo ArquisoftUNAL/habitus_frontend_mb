@@ -19,6 +19,7 @@ const DARK_SPACING_THEME: SpacingTheme = {
 
 const DARK_FONT_SIZE_THEME = {
     small: 15,
+    smallMedium: 17,
     medium: 20,
     mediumLarge: 30,
     large: 45

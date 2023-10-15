@@ -37,7 +37,7 @@ interface RenderDayProps {
 
 const PAGE_LIMIT = 1000;
 const DAYS_OFFSET = 7;
-const ALLOWED_BACKDAYS = 5;
+const ALLOWED_BACKDAYS = 2;
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -377,7 +377,6 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                 <View style={styles.accordionHeaderItem}>
                     <Pressable
                         onPress={() => {
-                            console.log("Deleting habit: " + section.habit.hab_id)
                             performHabitDeletion({
                                 variables: {
                                     id: section.habit.hab_id,

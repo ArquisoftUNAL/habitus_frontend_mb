@@ -9,6 +9,7 @@ export const createStyles = (theme: Theme) => {
             fontSize: theme.fontSizes.large,
             textAlign: 'center',
             padding: theme.spacing.medium,
+            flexShrink: 1,
         },
         smallText: {
             color: theme.colors.primary,
@@ -16,6 +17,15 @@ export const createStyles = (theme: Theme) => {
             textAlign: 'center',
             marginTop: theme.spacing.smallMedium,
             marginBottom: theme.spacing.smallMedium,
+            flexShrink: 1,
+        },
+        smallMediumText: {
+            color: theme.colors.primary,
+            fontSize: theme.fontSizes.smallMedium,
+            textAlign: 'center',
+            marginTop: theme.spacing.smallMedium,
+            marginBottom: theme.spacing.smallMedium,
+            flexShrink: 1,
         },
         mediumText: {
             color: theme.colors.primary,
@@ -24,12 +34,23 @@ export const createStyles = (theme: Theme) => {
             marginTop: theme.spacing.smallMedium,
             marginBottom: theme.spacing.smallMedium,
             textAlign: 'center',
+            flexShrink: 1,
+        },
+        mediumLargeText: {
+            color: theme.colors.primary,
+            fontWeight: 'bold',
+            fontSize: theme.fontSizes.mediumLarge,
+            marginTop: theme.spacing.smallMedium,
+            marginBottom: theme.spacing.smallMedium,
+            textAlign: 'center',
+            flexShrink: 1,
         },
         largeText: {
             color: theme.colors.primary,
             fontWeight: 'bold',
             fontSize: theme.fontSizes.large,
-            textAlign: 'center'
+            textAlign: 'center',
+            flexShrink: 1,
         },
         inputLabel: {
             backgroundColor: theme.colors.background,

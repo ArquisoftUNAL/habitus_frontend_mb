@@ -5,9 +5,17 @@ import { createStyles } from "./../styles/graphics.styles";
 
 interface SinglePieChartProps {
     data: any;
+    showText?: boolean;
+    externalRadius?: number;
+    internalRadius?: number;
+    fontSizeOverride?: number;
+    customCenterText?: any;
 };
 
-export const SinglePieChart: React.FC<SinglePieChartProps> = ({ data }) => {
+export const SinglePieChart: React.FC<SinglePieChartProps> = ({
+    data, showText = true, externalRadius = 100, internalRadius = 80,
+    fontSizeOverride = null, customCenterText = null
+}) => {
 
     console.log(data)
     const { theme } = useTheme();
@@ -18,23 +26,41 @@ export const SinglePieChart: React.FC<SinglePieChartProps> = ({ data }) => {
         <View>
             <PieChart
                 donut
-                innerRadius={80}
+                radius={externalRadius}
+                innerRadius={internalRadius}
                 data={data}
                 backgroundColor={theme.colors.background}
                 centerLabelComponent={() => {
+
+                    if (!showText)
+                        return null;
+
                     return (
                         <View style={styles.chartLegendContainer}>
                             {
-                                data.map((item: any, index: number) => {
-                                    return (
-                                        <Text
-                                            key={index}
-                                            style={styles.chartLegendText}
-                                        >
-                                            {item.text + " ~" + (item.value.toFixed(2) * 100) + "%"}
-                                        </Text>
-                                    )
-                                })
+                                customCenterText ?
+                                    <Text
+                                        style={[
+                                            styles.chartLegendText,
+                                            { fontSize: fontSizeOverride || theme.fontSizes.small }
+                                        ]}
+                                    >
+                                        {customCenterText}
+                                    </Text>
+                                    :
+                                    data.map((item: any, index: number) => {
+                                        return (
+                                            <Text
+                                                key={index}
+                                                style={[
+                                                    styles.chartLegendText,
+                                                    { fontSize: fontSizeOverride || theme.fontSizes.small }
+                                                ]}
+                                            >
+                                                {item.text + " ~" + (item.value.toFixed(2) * 100) + "%"}
+                                            </Text>
+                                        )
+                                    })
                             }
                         </View>
                     )

@@ -15,6 +15,7 @@ export interface SpacingTheme {
 
 export interface FontSizeTheme {
     small: number;
+    smallMedium: number;
     medium: number;
     mediumLarge: number;
     large: number;

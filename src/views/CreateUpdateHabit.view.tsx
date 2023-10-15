@@ -206,7 +206,7 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                         <Label title="Now please define a goal to accomplish per period" />
                         <TextFieldInput title="Goal" onChange={
                             (value: string) => setGoal(parseFloat(value) || 0)
-                        } value={goal.toString()} />
+                        } value={goal.toString()} enabled={type === 'edit'} />
 
                         <Spacing size={20} />
                         <Label title="Define a units measure for your habit" />

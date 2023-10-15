@@ -10,6 +10,7 @@ const style = (size: number) => {
     const styles = StyleSheet.create({
         spacing: {
             marginTop: size,
+            marginLeft: size,
         }
     });
     return styles.spacing;

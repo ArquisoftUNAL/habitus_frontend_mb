@@ -21,6 +21,7 @@ const LIGHT_SPACING_THEME: SpacingTheme = {
 
 const LIGHT_FONT_SIZE_THEME = {
     small: 15,
+    smallMedium: 20,
     medium: 20,
     mediumLarge: 30,
     large: 45
