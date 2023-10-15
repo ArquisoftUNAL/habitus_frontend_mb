@@ -57,7 +57,6 @@ export const SmallTextFieldInput: React.FC<TextInputProps> = ({ title, masked, e
                 <Text
                     style={styles.smallTextConfirmButton}
                     onPress={() => {
-                        console.log("pressed");
                         onChange && onChange(tempValue);
                     }}
                 >✔️
@@ -128,8 +127,12 @@ export const ComboBoxInput: React.FC<ComboBoxInputProps> = ({ items, value, onCh
                 onChange={item => {
                     onChange(item)
                 }}
+                itemTextStyle={styles.comboText}
+                itemContainerStyle={styles.comboItem}
+
                 value={value}
                 selectedTextStyle={styles.comboText}
+                placeholderStyle={styles.comboText}
                 placeholder={"⬇️ Please select"}
             />
         </View>
@@ -152,7 +155,6 @@ export const CheckBoxInput: React.FC<CheckBoxInputProps> = ({ value, enabled, on
             <Pressable
                 style={styles.checkBox}
                 onPress={() => {
-                    console.log("pressed")
                     onChange(!value);
                 }}
                 disabled={!enabled}

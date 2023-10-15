@@ -3,6 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { useMutation } from '@apollo/client';
 import { CommonActions } from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
+import { useToast } from 'react-native-toast-notifications';
 
 import graphql from '../graphql';
 import { PageTitle, Label } from '../components/texts';
@@ -12,9 +13,12 @@ import { TextFieldInput } from '../components/inputs';
 import { Spacing } from '../components/Spacing';
 import { Separator } from '../components/Separator';
 import { CustomButton } from '../components/Button';
-import { getAuthToken, setAuthToken } from '../storage/authToken';
+import { setAuthToken } from '../storage/authToken';
 import { LoadingView } from './LoadingView';
 import { GraphQLError } from '../components/GraphQLError';
+
+import { registerSchema } from '../validators/auth.validators';
+import { validate } from '../validators/validate';
 
 interface RegisterViewProps {
     navigation: any;
@@ -34,6 +38,8 @@ const redirectRegister = (navigation: any) => {
 export const RegisterView: React.FC<RegisterViewProps> = ({ navigation }) => {
 
     const { theme } = useTheme();
+    const toast = useToast();
+
     const styles = createStyles(theme);
 
     const [email, setEmail] = React.useState<string>('');
@@ -122,6 +128,13 @@ export const RegisterView: React.FC<RegisterViewProps> = ({ navigation }) => {
                 <Spacing size={10} />
                 <Separator />
                 <CustomButton title="Register" type="primary" action={() => {
+
+                    // Validate the input
+                    const error = validate(registerSchema, { email, password, name, birthDay });
+                    if (error) {
+                        toast.show(error, { type: 'danger' });
+                        return;
+                    }
                     performRegister()
                 }} />
 

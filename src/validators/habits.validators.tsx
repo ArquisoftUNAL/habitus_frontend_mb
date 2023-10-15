@@ -6,5 +6,6 @@ export const habitSchema = Joi.object().keys({
     category: Joi.string().required(),
     frequency_type: Joi.string().required(),
     goal: Joi.number().required(),
+
 });
 

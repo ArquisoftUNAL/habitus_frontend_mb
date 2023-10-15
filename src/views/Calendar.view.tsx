@@ -12,6 +12,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Spacing } from '../components/Spacing';
 import { ComboBoxInput } from '../components/inputs';
 import { GraphQLError } from '../components/GraphQLError';
+import { SinglePieChart } from '../components/SinglePieChart';
 
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -216,8 +217,6 @@ export const CalendarView: React.FC = () => {
             break;
     }
 
-    console.log(habit)
-
     const [dates, setDates] = React.useState([start_date, end_date]);
 
     const { loading: habitsLoading, error: habitsError, data: habitsData } = useQuery(graphql.USER_HABITS);
@@ -226,19 +225,29 @@ export const CalendarView: React.FC = () => {
         graphql.CALENDAR_RESUMED_DATA
     )
 
-    useEffect(() => {
-        // Always first query to perform
-        queryByUser({
-            variables: {
-                start_date: dates[0].toISOString().split('T')[0],
-                end_date: dates[1].toISOString().split('T')[0]
-            }
-        });
-    }, []);
-
     const [queryByHabit, { data: queryByHabitData, error: queryByHabitError, loading: queryByHabitLoading }] = useLazyQuery(
         graphql.CALENDAR_HABIT_RESUME_DATA
     );
+
+    useEffect(() => {
+        if (!habit) {
+            queryByUser({
+                variables: {
+                    start_date: dates[0].toISOString().split('T')[0],
+                    end_date: dates[1].toISOString().split('T')[0]
+                }
+            });
+        }
+        else {
+            queryByHabit({
+                variables: {
+                    start_date: dates[0].toISOString().split('T')[0],
+                    end_date: dates[1].toISOString().split('T')[0],
+                    hab_id: habit.value
+                }
+            });
+        }
+    }, [habit]);
 
     if (habitsLoading) return <LoadingView />;
 
@@ -254,21 +263,34 @@ export const CalendarView: React.FC = () => {
         }));
     }
 
-    habits.push({
+    const AllsOption = {
         label: "All",
         value: "all"
-    })
+    }
+
+    habits.push(AllsOption)
 
     if (queryByUserLoading) return <LoadingView />;
     if (queryByUserError) return <GraphQLError error={queryByUserError} />;
     if (queryByHabitLoading) return <LoadingView />;
     if (queryByHabitError) return <GraphQLError error={queryByHabitError} />;
 
-    console.log("Data", JSON.stringify(queryByUserData)
-        + "\n" + JSON.stringify(queryByHabitData));
-
     const calendarData = habit ? queryByHabitData?.calendarEventsByHabit : queryByUserData?.calendarEventsByUser;
-    console.log("chosen", calendarData);
+
+    // Build data for pie chart
+    const pieChartData = selectedDayData ? [
+        {
+            text: "Ocurrences",
+            value: selectedDayData.relative_frequency,
+            color: theme.colors.primary
+        },
+        {
+            text: "Remaining",
+            value: 1 - selectedDayData.relative_frequency,
+            color: theme.colors.tertiary
+        }
+    ] : [];
+
 
     return (
         <View style={styles.container}>
@@ -279,27 +301,12 @@ export const CalendarView: React.FC = () => {
                 items={habits}
                 onChange={(item: any) => {
                     if (item.value == "all") {
-                        console.log("all")
                         setHabit(null);
-                        queryByUser({
-                            variables: {
-                                start_date: dates[0].toISOString().split('T')[0],
-                                end_date: dates[1].toISOString().split('T')[0]
-                            }
-                        });
                     } else {
-                        console.log("not all", item)
                         setHabit(item);
-                        queryByHabit({
-                            variables: {
-                                start_date: dates[0].toISOString().split('T')[0],
-                                end_date: dates[1].toISOString().split('T')[0],
-                                hab_id: habit.value
-                            }
-                        });
                     }
                 }}
-                value={habit}
+                value={habit || AllsOption}
             />
             <ScrollView>
                 <View style={styles.buttonsRow}>
@@ -327,13 +334,16 @@ export const CalendarView: React.FC = () => {
                     {months[dates[0].getMonth()]}
                 </Text>
                 <BuildCalendarHeader styles={styles} />
-                <BuildCalendarDays
-                    styles={styles}
-                    start_date={dates[0]}
-                    end_date={dates[1]}
-                    calendarData={calendarData}
-                    setSelectedDayData={setSelectedDayData}
-                />
+                {
+                    calendarData &&
+                    <BuildCalendarDays
+                        styles={styles}
+                        start_date={dates[0]}
+                        end_date={dates[1]}
+                        calendarData={calendarData}
+                        setSelectedDayData={setSelectedDayData}
+                    />
+                }
 
                 {
                     selectedDayData ?
@@ -355,12 +365,15 @@ export const CalendarView: React.FC = () => {
                             <Text style={styles.selectedDayTextTitle}>
                                 Relative frequency (based on month)
                             </Text>
-                            <PieChart
+                            {/* <PieChart
                                 widthAndHeight={200}
                                 series={[selectedDayData.relative_frequency, 1 - selectedDayData.relative_frequency]}
                                 sliceColor={[theme.colors.secondary, theme.colors.tertiary]}
                                 coverRadius={0.45}
                                 coverFill={theme.colors.background}
+                            /> */}
+                            <SinglePieChart
+                                data={pieChartData}
                             />
                         </View>
                         :

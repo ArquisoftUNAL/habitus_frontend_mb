@@ -97,6 +97,9 @@ export const createStyles = (theme: Theme) => {
         },
         comboStyle: {
         },
+        comboItem: {
+            backgroundColor: theme.colors.background,
+        },
         comboText: {
             color: theme.colors.primary,
             fontSize: theme.fontSizes.medium,

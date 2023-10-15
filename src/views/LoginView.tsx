@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useMutation } from '@apollo/client';
 import { CommonActions } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications';
 
 import graphql from '../graphql';
 import { PageTitle, Label } from '../components/texts';
@@ -16,6 +17,9 @@ import { getAuthToken, setAuthToken } from '../storage/authToken';
 import { ScrollView } from 'react-native-gesture-handler';
 import { LoadingView } from './LoadingView';
 import { GraphQLError } from '../components/GraphQLError';
+
+import { loginSchema } from '../validators/auth.validators';
+import { validate } from '../validators/validate';
 
 interface LoginViewProps {
     navigation: any;
@@ -35,6 +39,8 @@ const redirectLogin = (navigation: any) => {
 export const LoginView: React.FC<LoginViewProps> = ({ navigation }) => {
 
     const { theme } = useTheme();
+    const toast = useToast();
+
     const styles = {
         ...buildContainerStyles(theme),
         ...buildLoginStyles(theme)
@@ -92,6 +98,16 @@ export const LoginView: React.FC<LoginViewProps> = ({ navigation }) => {
                 <Spacing size={20} />
                 <Separator />
                 <CustomButton title="Login" type="primary" action={() => {
+
+                    // Validate the input
+                    const error = validate(loginSchema, { email, password });
+                    console.log(loginSchema)
+                    console.log(error)
+                    if (error) {
+                        toast.show(error, { type: 'danger' });
+                        return;
+                    }
+
                     performLogin();
                 }} />
 

@@ -28,4 +28,27 @@ const GET_HABIT_STATISTICS = gql`
     }
 `;
 
-export default { GET_HABIT_STATISTICS };
+const GET_FULL_STATISTICS = gql`
+    query GetFullStatistics(
+        $id: String!
+    ){
+        habitReport(id : $id) {
+            __typename
+            ... on YNReport {
+                resume {
+                    month
+                }
+            }
+
+            ... on MeasureReport {
+                resume {
+                    week {
+                        percentage
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export default { GET_HABIT_STATISTICS, GET_FULL_STATISTICS };

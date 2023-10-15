@@ -12,6 +12,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Spacing } from '../components/Spacing';
 import { CommonActions } from '@react-navigation/native';
 import { removeAuthToken } from '../storage/authToken';
+import { Separator } from '../components/Separator';
 
 const redirectMain = (navigation: any) => {
     navigation.dispatch(
@@ -71,6 +72,14 @@ export const WelcomeView = React.memo<WelcomeViewProps>(({ navigation }) => {
             <CustomButton title="Register" action={() => {
                 navigation.navigate('Register');
             }} type="secondary" />
+
+            <Separator />
+
+            <Text style={[styles.mediumText, {
+                width: "50%"
+            }]}>
+                Habitus is a project for encouraging the power of habits among users 💪
+            </Text>
 
         </ScrollView >
     );
