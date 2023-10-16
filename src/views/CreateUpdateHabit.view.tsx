@@ -65,7 +65,7 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
     const [description, setDescription] = React.useState<string>(type === 'create' ? '' : data.hab_description);
     const [goal, setGoal] = React.useState<number>(type === 'create' ? 0 : data.hab_goal);
     const [isYn, setIsYn] = React.useState<boolean>(type === 'create' ? false : data.hab_is_yn);
-    const [units, setUnits] = React.useState<string>(type === 'create' ? '' : data.hab_units);
+    const [units, setUnits] = React.useState<string>(type === 'create' ? 'ocurrences' : data.hab_units);
     const [frequency, setFrequency] = React.useState<any>(
         type === 'create' ? frequences[0] : frequences.find(
             (freq) => freq.value === data.hab_freq_type
@@ -206,15 +206,15 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                         <Label title="Now please define a goal to accomplish per period" />
                         <TextFieldInput title="Goal" onChange={
                             (value: string) => setGoal(parseFloat(value) || 0)
-                        } value={goal.toString()} enabled={type === 'edit'} />
-
-                        <Spacing size={20} />
-                        <Label title="Define a units measure for your habit" />
-                        <TextFieldInput title="Units" onChange={
-                            (value: string) => setUnits(value)
-                        } value={units} />
+                        } value={goal.toString()} enabled={type !== 'edit'} />
                     </>
                 )}
+
+                <Spacing size={20} />
+                <Label title="Define a units measure for your habit" />
+                <TextFieldInput title="Units" onChange={
+                    (value: string) => setUnits(value)
+                } value={units} />
 
                 <Separator />
 

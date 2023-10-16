@@ -17,7 +17,7 @@ import { SinglePieChart } from '../components/SinglePieChart';
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const months = [
-    'Janurary', 'February', 'March', 'April', 'May', 'June',
+    'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November',
     'December'
 ];
@@ -331,7 +331,7 @@ export const CalendarView: React.FC = () => {
                     </Pressable>
                 </View>
                 <Text style={styles.largeText}>
-                    {months[dates[0].getMonth()]}
+                    {months[dates[0].getMonth()]} - {dates[0].getFullYear()}
                 </Text>
                 <BuildCalendarHeader styles={styles} />
                 {

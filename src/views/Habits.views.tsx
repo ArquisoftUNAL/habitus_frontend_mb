@@ -511,6 +511,16 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                     }}
                 />
 
+                <Spacing size={20} />
+
+                <CustomButton
+                    title="Refresh"
+                    type="primary"
+                    action={() => {
+                        launchHabitsQuery();
+                    }}
+                />
+
                 <Separator />
 
                 <Accordion
