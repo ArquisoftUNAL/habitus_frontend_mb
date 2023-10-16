@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 const USER_HABITS = gql`
     query UserHabits {
-        habitsByUser {
+        habitsByUser(per_page: 100) {
             hab_id
             hab_name
             hab_goal

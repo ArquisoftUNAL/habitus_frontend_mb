@@ -88,6 +88,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('habitus_mobile_key.keystore')
+            storePassword 'habitus'
+            keyAlias 'habitus_mobile_key'
+            keyPassword 'habitus'
+        }
     }
     buildTypes {
         debug {
