@@ -397,10 +397,11 @@ export const AchievementsView: React.FC = () => {
     return (
         <View style={styles.mainContainer}>
 
-            <Text style={styles.largeText} numberOfLines={3}>
-                Achievements and Milestones
+            <Text style={styles.largeText}>
+                Achievements
+                <Spacing size={20} />
             </Text>
-
+            <Spacing size={20} />
             <ScrollView>
                 <CollapsableHabitsContainer
                     habits={habitData.habitsByUser}
