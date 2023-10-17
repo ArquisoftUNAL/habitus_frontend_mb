@@ -32,7 +32,7 @@ const HISTORY_LAST_DAYS_LIMIT = 5;
 
 
 const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, data, styles, theme }) => {
-    const report = data.habitFMeasureReport;
+    const report = data.habitMeasureReport;
 
     // Calculate maximum streak
     let maxStreak = 0;
@@ -515,8 +515,6 @@ const RenderYnHabitStatistics: React.FC<StatisticsProps> = ({ habit, data, style
         </View>
     )
 }
-
-
 
 export const StatisticsView: React.FC = () => {
 

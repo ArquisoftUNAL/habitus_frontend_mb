@@ -399,7 +399,6 @@ export const AchievementsView: React.FC = () => {
 
             <Text style={styles.largeText}>
                 Achievements
-                <Spacing size={20} />
             </Text>
             <Spacing size={20} />
             <ScrollView>

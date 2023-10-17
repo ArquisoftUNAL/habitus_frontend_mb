@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Text, View, Image } from 'react-native';
 import { useQuery } from '@apollo/client';
 
@@ -31,17 +31,9 @@ interface WelcomeViewProps {
     navigation: any;
 };
 
-export const WelcomeView = React.memo<WelcomeViewProps>(({ navigation }) => {
+export const WelcomeView: React.FC<WelcomeViewProps> = ({ navigation }) => {
 
     const { loading, data, error } = useQuery(graphql.GET_USER);
-
-    if (data?.getCurrentUser) {
-        // User is logged in, redirect to main view
-        redirectMain(navigation);
-    } else if (!loading || error) {
-        // User is not logged in, drop the token
-        removeAuthToken();
-    }
 
     const { theme } = useTheme();
     const styles = {
@@ -49,6 +41,18 @@ export const WelcomeView = React.memo<WelcomeViewProps>(({ navigation }) => {
         ...testStylesBuilder(theme),
         ...mainContainerBuilder(theme)
     };
+
+    useEffect(
+        () => {
+            if (data?.getCurrentUser) {
+                // User is logged in, redirect to main view
+                redirectMain(navigation);
+            } else if (!loading || error) {
+                // User is not logged in, drop the token
+                removeAuthToken();
+            }
+        }
+        , [data]);
 
     return (
         <ScrollView
@@ -83,4 +87,4 @@ export const WelcomeView = React.memo<WelcomeViewProps>(({ navigation }) => {
 
         </ScrollView >
     );
-});
+};

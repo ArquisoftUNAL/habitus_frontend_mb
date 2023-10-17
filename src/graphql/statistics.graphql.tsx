@@ -4,7 +4,7 @@ const GET_MEASURE_HABIT_STATISTICS = gql`
     query GetMeasureStatisticsReport(
         $id: String!
     ) {
-        habitFMeasureReport(
+        habitMeasureReport(
             id: $id
         ){
             resume {
