@@ -16,8 +16,6 @@ export const SinglePieChart: React.FC<SinglePieChartProps> = ({
     data, showText = true, externalRadius = 100, internalRadius = 80,
     fontSizeOverride = null, customCenterText = null
 }) => {
-
-    console.log(data)
     const { theme } = useTheme();
 
     const styles = createStyles(theme);

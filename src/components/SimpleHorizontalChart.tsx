@@ -8,8 +8,6 @@ interface SinglePieChartProps {
 };
 
 export const SimpleBarChart: React.FC<SinglePieChartProps> = ({ data }) => {
-
-    console.log(data)
     const { theme } = useTheme();
 
     const styles = createStyles(theme);
