@@ -34,6 +34,8 @@ const HISTORY_LAST_DAYS_LIMIT = 5;
 const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, data, styles, theme }) => {
     const report = data.habitMeasureReport;
 
+    if (!report.resume || !report.history || !report.streaks || !report.days_frequency) return null;
+
     // Calculate maximum streak
     let maxStreak = 0;
     report.streaks.data.forEach((streak: any) => {
@@ -55,25 +57,28 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
                 <Text style={styles.smallText}>
                     Progress to present day:
                 </Text>
-                <SinglePieChart
-                    data={[
-                        {
-                            text: "Progress in month",
-                            value: report.resume.toDay.percentage,
-                            color: theme.colors.primary
-                        },
-                        {
-                            text: "Remaining",
-                            value: 1 - report.resume.toDay.percentage,
-                            color: theme.colors.tertiary
-                        }
-                    ]}
-                    showText={true}
-                    customCenterText={report.resume.toDay.percentage.toFixed(2) * 100 + "%"}
+                {
+                    report.resume.toDay &&
+                    <SinglePieChart
+                        data={[
+                            {
+                                text: "Progress in month",
+                                value: report.resume.toDay.percentage,
+                                color: theme.colors.primary
+                            },
+                            {
+                                text: "Remaining",
+                                value: 1 - report.resume.toDay.percentage,
+                                color: theme.colors.tertiary
+                            }
+                        ]}
+                        showText={true}
+                        customCenterText={report.resume.toDay.percentage.toFixed(2) * 100 + "%"}
 
-                    internalRadius={40}
-                    externalRadius={50}
-                />
+                        internalRadius={40}
+                        externalRadius={50}
+                    />
+                }
             </View>
             <View style={styles.measurableResumeContainer}>
 
@@ -81,98 +86,111 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
                     <Text style={styles.smallText}>
                         Progress in this week:
                     </Text>
-                    <SinglePieChart
-                        data={[
-                            {
-                                text: "Progress in month",
-                                value: report.resume.week.percentage,
-                                color: theme.colors.primary
-                            },
-                            {
-                                text: "Remaining",
-                                value: 1 - report.resume.week.percentage,
-                                color: theme.colors.tertiary
-                            }
-                        ]}
-                        showText={true}
-                        customCenterText={report.resume.week.percentage.toFixed(2) * 100 + "%"}
+                    {
+                        report.resume.week &&
+                        <SinglePieChart
+                            data={[
+                                {
+                                    text: "Progress in month",
+                                    value: report.resume.week.percentage,
+                                    color: theme.colors.primary
+                                },
+                                {
+                                    text: "Remaining",
+                                    value: 1 - report.resume.week.percentage,
+                                    color: theme.colors.tertiary
+                                }
+                            ]}
+                            showText={true}
+                            customCenterText={report.resume.week.percentage.toFixed(2) * 100 + "%"}
 
-                        internalRadius={40}
-                        externalRadius={50}
-                    />
+                            internalRadius={40}
+                            externalRadius={50}
+                        />
+                    }
                 </View>
                 <View style={styles.measurableResumeItemContainer}>
                     <Text style={styles.smallText}>
                         Progress in this month:
                     </Text>
-                    <SinglePieChart
-                        data={[
-                            {
-                                text: "Progress in month",
-                                value: report.resume.month.percentage,
-                                color: theme.colors.primary
-                            },
-                            {
-                                text: "Remaining",
-                                value: 1 - report.resume.month.percentage,
-                                color: theme.colors.tertiary
-                            }
-                        ]}
-                        showText={true}
-                        customCenterText={report.resume.month.percentage.toFixed(2) * 100 + "%"}
+                    {
+                        report.resume.month &&
+                        <SinglePieChart
+                            data={[
+                                {
+                                    text: "Progress in month",
+                                    value: report.resume.month.percentage,
+                                    color: theme.colors.primary
+                                },
+                                {
+                                    text: "Remaining",
+                                    value: 1 - report.resume.month.percentage,
+                                    color: theme.colors.tertiary
+                                }
+                            ]}
+                            showText={true}
+                            customCenterText={report.resume.month.percentage.toFixed(2) * 100 + "%"}
 
-                        internalRadius={40}
-                        externalRadius={50}
-                    />
+                            internalRadius={40}
+                            externalRadius={50}
+                        />
+                    }
                 </View>
                 <View style={styles.measurableResumeItemContainer}>
                     <Text style={styles.smallText}>
                         Progress in this semester:
                     </Text>
-                    <SinglePieChart
-                        data={[
-                            {
-                                text: "Progress in month",
-                                value: report.resume.semester.percentage,
-                                color: theme.colors.primary
-                            },
-                            {
-                                text: "Remaining",
-                                value: 1 - report.resume.semester.percentage,
-                                color: theme.colors.tertiary
-                            }
-                        ]}
-                        showText={true}
-                        customCenterText={report.resume.semester.percentage.toFixed(2) * 100 + "%"}
+                    {
+                        report.resume.semester &&
+                        <SinglePieChart
+                            data={[
+                                {
+                                    text: "Progress in month",
+                                    value: report.resume.semester.percentage,
+                                    color: theme.colors.primary
+                                },
+                                {
+                                    text: "Remaining",
+                                    value: 1 - report.resume.semester.percentage,
+                                    color: theme.colors.tertiary
+                                }
+                            ]}
+                            showText={true}
+                            customCenterText={report.resume.semester.percentage.toFixed(2) * 100 + "%"}
 
-                        internalRadius={40}
-                        externalRadius={50}
-                    />
+                            internalRadius={40}
+                            externalRadius={50}
+                        />
+                    }
                 </View>
                 <View style={styles.measurableResumeItemContainer}>
                     <Text style={styles.smallText}>
                         Progress in this year:
                     </Text>
-                    <SinglePieChart
-                        data={[
-                            {
-                                text: "Progress in month",
-                                value: report.resume.year.percentage,
-                                color: theme.colors.primary
-                            },
-                            {
-                                text: "Remaining",
-                                value: 1 - report.resume.year.percentage,
-                                color: theme.colors.tertiary
-                            }
-                        ]}
-                        showText={true}
-                        customCenterText={report.resume.year.percentage.toFixed(2) * 100 + "%"}
+                    {
+                        report.resume.year &&
+                        <SinglePieChart
+                            data={[
+                                {
+                                    text: "Progress in month",
+                                    value: report.resume.year.percentage,
+                                    color: theme.colors.primary
+                                },
+                                {
+                                    text: "Remaining",
+                                    value: 1 - report.resume.year.percentage,
+                                    color: theme.colors.tertiary
+                                }
+                            ]}
+                            showText={true}
+                            customCenterText={report.resume.year.percentage.toFixed(2) * 100 + "%"}
 
-                        internalRadius={40}
-                        externalRadius={50}
-                    />
+                            internalRadius={40}
+                            externalRadius={50}
+                        />
+                    }
                 </View>
+
 
             </View>
             <Text style={styles.mediumText}>
@@ -183,7 +201,7 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
                     Daily
                 </Text>
                 {
-                    report.history.day.data.map((data: any, index: number) => {
+                    report.history.day?.data.map((data: any, index: number) => {
                         if (index > HISTORY_DAYS_LIMIT) return null;
                         return (
                             <View key={index}>
@@ -202,7 +220,7 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
                         Weekly
                     </Text>
                     {
-                        report.history.day.data.map((data: any, index: number) => {
+                        report.history.week?.data.map((data: any, index: number) => {
                             if (index > HISTORY_DAYS_LIMIT) return null;
                             return (
                                 <View key={index}>
@@ -219,7 +237,7 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
                         Monthly
                     </Text>
                     {
-                        report.history.month.data.map((data: any, index: number) => {
+                        report.history.month?.data.map((data: any, index: number) => {
                             if (index > HISTORY_MONTHS_LIMIT) return null;
                             return (
                                 <View key={index}>
@@ -236,7 +254,7 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
                         Semester
                     </Text>
                     {
-                        report.history.semester.data.map((data: any, index: number) => {
+                        report.history.semester?.data.map((data: any, index: number) => {
                             if (index > HISTORY_SEMESTERS_LIMIT) return null;
                             return (
                                 <View key={index}>
@@ -253,7 +271,7 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
                         Year
                     </Text>
                     {
-                        report.history.year.data.map((data: any, index: number) => {
+                        report.history.year?.data.map((data: any, index: number) => {
                             if (index > HISTORY_YEARS_LIMIT) return null;
                             return (
                                 <View key={index}>
@@ -321,6 +339,8 @@ const RenderMeasurableHabitStatistics: React.FC<StatisticsProps> = ({ habit, dat
 
 const RenderYnHabitStatistics: React.FC<StatisticsProps> = ({ habit, data, styles, theme }) => {
     const report = data.habitYnReport;
+
+    if (!report.resume || !report.history || !report.streaks || !report.days_frequency) return null;
 
     // Calculate maximum streak
     let maxStreak = 0;
