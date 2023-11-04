@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Modal, ScrollView, Text, View } from 'react-native';
 import { useMutation, useQuery } from '@apollo/client';
 import ColorPicker, { HueCircular, Panel1, PreviewText, Swatches } from 'reanimated-color-picker';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -14,6 +14,7 @@ import { Spacing } from '../components/Spacing';
 import { Separator } from '../components/Separator';
 import { CustomButton } from '../components/Button';
 import { LoadingView } from './LoadingView';
+import { MedicalCentersView } from './MedicalCenters.view';
 import { GraphQLError } from '../components/GraphQLError';
 import { ValidationError } from '../components/ValidationError';
 
@@ -61,11 +62,14 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
 
     const toast = useToast();
 
+    const [medicalCentersModal, setMedicalCentersModal] = React.useState<boolean>(false);
     const [name, setName] = React.useState<string>(type === 'create' ? '' : data.hab_name);
     const [description, setDescription] = React.useState<string>(type === 'create' ? '' : data.hab_description);
     const [goal, setGoal] = React.useState<number>(type === 'create' ? 0 : data.hab_goal);
     const [isYn, setIsYn] = React.useState<boolean>(type === 'create' ? false : data.hab_is_yn);
     const [units, setUnits] = React.useState<string>(type === 'create' ? 'ocurrences' : data.hab_units);
+    const [location, setLocation] = React.useState<string | null>(type === 'create' ? '' : data.hab_location);
+
     const [frequency, setFrequency] = React.useState<any>(
         type === 'create' ? frequences[0] : frequences.find(
             (freq) => freq.value === data.hab_freq_type
@@ -141,6 +145,30 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
 
     return (
         <ScrollView>
+
+            <Modal
+                animationType="fade"
+                presentationStyle='formSheet'
+                visible={medicalCentersModal}
+                onRequestClose={() => {
+                    setMedicalCentersModal(false);
+                }}
+            >
+                <MedicalCentersView
+                    onLocationSelection={
+                        (location: string) => {
+                            setLocation(location);
+                            setMedicalCentersModal(false);
+                        }
+                    }
+
+                    onClose={
+                        () => {
+                            setMedicalCentersModal(false);
+                        }
+                    }
+                />
+            </Modal>
 
             <View style={styles.container}>
 
@@ -254,15 +282,31 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                     </View>
                 </ColorPicker>
 
+                <Spacing size={20} />
+                <Label title="(Optional) Define a location reminder where you want to perform this habit" />
+                <TextFieldInput title="Location" onChange={
+                    (value: string) => setLocation(value)
+                } value={location || ''} />
+
+                <Spacing size={10} />
+                <CustomButton
+                    title="(NEW) Choose a medical institution as location"
+                    type="secondary"
+                    action={() => {
+                        setMedicalCentersModal(true);
+                    }}
+                    fontSize={theme.fontSizes.small}
+                />
+
                 <Spacing size={10} />
                 <Separator />
-                <Spacing size={20} />
+                <Spacing size={10} />
                 {
                     errors.length > 0 && (
                         <ValidationError error={errors} />
                     )
                 }
-                <Spacing size={20} />
+                <Spacing size={10} />
                 <CustomButton title="Save" type="primary" action={() => {
                     // Validate data
                     const errors = validate(
@@ -281,7 +325,8 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                     const mutation_data = {
                         variables: {
                             name, description, is_favorite: isFavorite, is_yn: isYn, color: color,
-                            goal, units, frequency_type: frequency.value, category: category.value
+                            goal, units, frequency_type: frequency.value, category: category.value,
+                            location
                         },
                         onCompleted: () => {
                             toast.show(
@@ -318,6 +363,8 @@ export const CreateUpdateHabitView: React.FC<CreateUpdateHabitProps> = ({ onClos
                     });
                 }
                 } />
+
+                <Spacing size={10} />
 
                 <CustomButton title="Cancel" type="secondary" action={() => {
                     onClose();

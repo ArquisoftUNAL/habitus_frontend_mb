@@ -430,6 +430,13 @@ export const HabitsView = React.memo<HabitsViewProps>(({ navigation }) => {
                 <Text style={styles.smallText}>
                     Description: {section.habit.hab_description}
                 </Text>
+                <Text style={styles.smallText}>
+                    {
+                        section.habit.hab_location ?
+                            "Location: " + section.habit.hab_location :
+                            "No location, update this habit to add one!"
+                    }
+                </Text>
                 <View style={styles.datesContainer}>
                     <ScrollView
                         horizontal={true}

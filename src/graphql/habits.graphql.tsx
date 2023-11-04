@@ -37,6 +37,7 @@ const USER_HABITS_FULL_DATA = gql`
             hab_is_yn
             hab_color
             hab_units
+            hab_location
         }
 
         habitdataByUser(
@@ -71,7 +72,8 @@ const ADD_HABIT = gql`
         $goal: Float!
         $units: String!
         $frequency_type: String!
-        $category: String!
+        $category: String!,
+        $location: String
     ) {
         addHabit (
             habit: {
@@ -83,7 +85,8 @@ const ADD_HABIT = gql`
                 goal: $goal
                 units: $units
                 frequency_type: $frequency_type
-                category: $category
+                category: $category,
+                location: $location
             }
         ) {
             id
@@ -103,6 +106,7 @@ const UPDATE_HABIT = gql`
         $units: String
         $frequency_type: String
         $category: String
+        $location: String
     ) {
         updateHabit (
             id: $id
@@ -116,6 +120,7 @@ const UPDATE_HABIT = gql`
                 units: $units
                 frequency_type: $frequency_type
                 category: $category
+                location: $location
             }
         ) {
             message
