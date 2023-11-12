@@ -12,3 +12,6 @@ server-PID:
 
 kill-server:
 	taskkill /PID ${PID} /F
+
+production-build:
+	npx react-native run-android --variant=release

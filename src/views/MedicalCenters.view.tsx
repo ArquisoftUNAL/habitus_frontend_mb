@@ -67,6 +67,7 @@ export const MedicalCentersView: React.FC<MedicalCentersViewProps> = ({ onLocati
                                             style={
                                                 center.id === chosen.id ? styles.centerContainerSelected : styles.centerContainer
                                             }
+                                            key={index}
                                             onPress={() => setChosen(center)}
                                         >
                                             <Text
