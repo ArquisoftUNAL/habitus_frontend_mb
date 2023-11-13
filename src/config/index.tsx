@@ -3,3 +3,5 @@
 //export const GRAPHQL_SERVER = 'http://192.168.1.6:4000'
 //export const GRAPHQL_SERVER = 'http://10.203.185.70:4000'
 export const GRAPHQL_SERVER = 'https://34.151.247.93'
+//export const GRAPHQL_SERVER = 'http://35.198.24.118'
+//export const GRAPHQL_SERVER = 'https://192.168.1.6'
