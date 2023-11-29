@@ -15,3 +15,7 @@ kill-server:
 
 production-build:
 	npx react-native run-android --variant=release
+
+build-from-gradle:
+	cd android
+	gradlew assembleRelease
